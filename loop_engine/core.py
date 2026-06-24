@@ -589,10 +589,17 @@ class LoopEngine:
 
     async def _execute_iteration(self, context: LoopContext):
         """Execute a single iteration of the loop with state transitions."""
+        # Handle entry from ITERATION_COMPLETE -> PLANNING
+        if self.state.execution_state == ExecutionState.ITERATION_COMPLETE:
+            self._transition_to(ExecutionState.PLANNING)
+
         # 1. PLANNING: Create or revise plan
         if self.config.enable_planner:
-            if self.state.execution_state == ExecutionState.INITIALIZED:
+            if self.state.execution_state in [ExecutionState.INITIALIZED, ExecutionState.ITERATION_COMPLETE]:
                 self._transition_to(ExecutionState.PLANNING)
+            elif self.state.execution_state == ExecutionState.REPLANNING:
+                # Coming from recovery replanning
+                pass
             await self._execute_planning(context)
         else:
             # Without planner, we need a fixed plan or direct execution
