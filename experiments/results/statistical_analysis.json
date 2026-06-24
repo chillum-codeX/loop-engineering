@@ -1,0 +1,30 @@
+{
+  "loop_engine_vs_one_shot": {
+    "t_statistic": -1.1077750976052871,
+    "p_value": 0.2718620155199665,
+    "significant": false
+  },
+  "loop_engine_vs_chain_of_thought": {
+    "t_statistic": -0.9948661696173021,
+    "p_value": 0.3233284342976409,
+    "significant": false
+  },
+  "one_shot_stats": {
+    "mean": 0.027685714285714286,
+    "std": 0.061240682756561395,
+    "sem": 0.010351564718837433,
+    "n": 35
+  },
+  "chain_of_thought_stats": {
+    "mean": 0.025628571428571428,
+    "std": 0.05652634567263341,
+    "sem": 0.0095546963098962,
+    "n": 35
+  },
+  "loop_engine_stats": {
+    "mean": 0.014285714285714285,
+    "std": 0.034992710611188256,
+    "sem": 0.005914847651505893,
+    "n": 35
+  }
+}

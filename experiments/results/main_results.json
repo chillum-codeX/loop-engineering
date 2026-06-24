@@ -1,0 +1,2462 @@
+[
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010366439819335938,
+    "iterations": 1,
+    "token_usage": 116,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 1: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010373830795288086,
+    "iterations": 1,
+    "token_usage": 116,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 2: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010390520095825195,
+    "iterations": 1,
+    "token_usage": 116,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 3: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01038670539855957,
+    "iterations": 1,
+    "token_usage": 116,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 4: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010406732559204102,
+    "iterations": 1,
+    "token_usage": 116,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 5: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010324478149414062,
+    "iterations": 1,
+    "token_usage": 188,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 6: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010436296463012695,
+    "iterations": 1,
+    "token_usage": 188,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 7: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010273218154907227,
+    "iterations": 1,
+    "token_usage": 188,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 8: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010391712188720703,
+    "iterations": 1,
+    "token_usage": 188,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 9: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010324954986572266,
+    "iterations": 1,
+    "token_usage": 189,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "Mock response 10: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0005972385406494141,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0004799365997314453,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0004088878631591797,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0003833770751953125,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_000",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0003292560577392578,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "If Alice is taller than Bob, and Bob is taller than Charlie, who is the shortest?",
+      "expected": "Charlie",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010214567184448242,
+    "iterations": 1,
+    "token_usage": 133,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 11: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010283470153808594,
+    "iterations": 1,
+    "token_usage": 133,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 12: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01024937629699707,
+    "iterations": 1,
+    "token_usage": 133,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 13: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010299205780029297,
+    "iterations": 1,
+    "token_usage": 133,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 14: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010293245315551758,
+    "iterations": 1,
+    "token_usage": 133,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 15: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010368108749389648,
+    "iterations": 1,
+    "token_usage": 205,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 16: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01026773452758789,
+    "iterations": 1,
+    "token_usage": 205,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 17: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010317564010620117,
+    "iterations": 1,
+    "token_usage": 205,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 18: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010299444198608398,
+    "iterations": 1,
+    "token_usage": 205,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 19: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010240316390991211,
+    "iterations": 1,
+    "token_usage": 205,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "Mock response 20: Acknowledged task.",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0019092559814453125,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0003654956817626953,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00046253204345703125,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0004513263702392578,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "multihop_002",
+    "task_name": "Multi-Hop Reasoning",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0004191398620605469,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "question": "A bat and ball cost $11 total. The bat costs $10 more than the ball. How much does the ball cost?",
+      "expected": "0.50",
+      "actual": "None",
+      "verification_passed": null
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010374069213867188,
+    "iterations": 1,
+    "token_usage": 136,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010283708572387695,
+    "iterations": 1,
+    "token_usage": 136,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01032114028930664,
+    "iterations": 1,
+    "token_usage": 136,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010288000106811523,
+    "iterations": 1,
+    "token_usage": 136,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010307788848876953,
+    "iterations": 1,
+    "token_usage": 136,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010323286056518555,
+    "iterations": 1,
+    "token_usage": 208,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010326385498046875,
+    "iterations": 1,
+    "token_usage": 208,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010251283645629883,
+    "iterations": 1,
+    "token_usage": 208,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010310649871826172,
+    "iterations": 1,
+    "token_usage": 208,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010319709777832031,
+    "iterations": 1,
+    "token_usage": 208,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0006022453308105469,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0003609657287597656,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00035119056701660156,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00034689903259277344,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "planning_000",
+    "task_name": "Long-Horizon Planning",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00035762786865234375,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "goal": "Organize a surprise birthday party",
+      "elements_found": 0,
+      "total_elements": 5,
+      "plan_steps": 0,
+      "expected_steps": 6
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010571479797363281,
+    "iterations": 1,
+    "token_usage": 282,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 2031}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010429620742797852,
+    "iterations": 1,
+    "token_usage": 282,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 2024}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010315895080566406,
+    "iterations": 1,
+    "token_usage": 282,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 1434}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010356903076171875,
+    "iterations": 1,
+    "token_usage": 282,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 1544}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010491609573364258,
+    "iterations": 1,
+    "token_usage": 282,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 1484}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01040506362915039,
+    "iterations": 1,
+    "token_usage": 354,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 2044}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01034855842590332,
+    "iterations": 1,
+    "token_usage": 354,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 1439}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010359764099121094,
+    "iterations": 1,
+    "token_usage": 354,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 1544}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010309934616088867,
+    "iterations": 1,
+    "token_usage": 354,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 1484}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010338783264160156,
+    "iterations": 1,
+    "token_usage": 354,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "{\"result\": 2044}",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0005295276641845703,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "None",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0004565715789794922,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "None",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0005092620849609375,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "None",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0005035400390625,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "None",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "tools_001",
+    "task_name": "Tool Use with Recovery",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0002944469451904297,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "expected_sum": 1060,
+      "actual_output": "None",
+      "recovery_used": false,
+      "failures_encountered": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010343551635742188,
+    "iterations": 1,
+    "token_usage": 108,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 41: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010333538055419922,
+    "iterations": 1,
+    "token_usage": 108,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 42: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010318517684936523,
+    "iterations": 1,
+    "token_usage": 108,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 43: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010318279266357422,
+    "iterations": 1,
+    "token_usage": 108,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 44: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010260581970214844,
+    "iterations": 1,
+    "token_usage": 108,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 45: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01034688949584961,
+    "iterations": 1,
+    "token_usage": 180,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 46: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010382413864135742,
+    "iterations": 1,
+    "token_usage": 180,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 47: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010373592376708984,
+    "iterations": 1,
+    "token_usage": 180,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 48: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010481595993041992,
+    "iterations": 1,
+    "token_usage": 180,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 49: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010333776473999023,
+    "iterations": 1,
+    "token_usage": 180,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "Mock response 50: Acknowledged task.",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00048542022705078125,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "None",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.000453948974609375,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "None",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0003662109375,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "None",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0003509521484375,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "None",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "correction_002",
+    "task_name": "Self-Correction",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0002846717834472656,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "problem": "If 8 workers can build a wall in 10 days, how long will 16 workers take?",
+      "correct_answer": 5,
+      "actual_output": "None",
+      "showed_correction": false,
+      "evaluation_iterations": 0
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.1688,
+    "execution_time": 0.010294675827026367,
+    "iterations": 1,
+    "token_usage": 106,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.788,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.1688,
+    "execution_time": 0.010414838790893555,
+    "iterations": 1,
+    "token_usage": 106,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.788,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.1688,
+    "execution_time": 0.010280370712280273,
+    "iterations": 1,
+    "token_usage": 106,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.788,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.1688,
+    "execution_time": 0.01033163070678711,
+    "iterations": 1,
+    "token_usage": 106,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.788,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.1688,
+    "execution_time": 0.010288238525390625,
+    "iterations": 1,
+    "token_usage": 106,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.788,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.1544,
+    "execution_time": 0.010215997695922852,
+    "iterations": 1,
+    "token_usage": 178,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.644,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.1544,
+    "execution_time": 0.010337352752685547,
+    "iterations": 1,
+    "token_usage": 178,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.644,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.1544,
+    "execution_time": 0.010317325592041016,
+    "iterations": 1,
+    "token_usage": 178,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.644,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.1544,
+    "execution_time": 0.01026296615600586,
+    "iterations": 1,
+    "token_usage": 178,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.644,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.1544,
+    "execution_time": 0.01029825210571289,
+    "iterations": 1,
+    "token_usage": 178,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0.9,
+      "token_efficiency": 0.644,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.1,
+    "execution_time": 0.0005342960357666016,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0,
+      "token_efficiency": 1.0,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.1,
+    "execution_time": 0.0004963874816894531,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0,
+      "token_efficiency": 1.0,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.1,
+    "execution_time": 0.000396728515625,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0,
+      "token_efficiency": 1.0,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.1,
+    "execution_time": 0.0003399848937988281,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0,
+      "token_efficiency": 1.0,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "budget_10",
+    "task_name": "Budget-Constrained Optimization",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.1,
+    "execution_time": 0.00029349327087402344,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answer": 1000,
+      "steps_allowed": 10,
+      "tokens_allowed": 500,
+      "step_efficiency": 0,
+      "token_efficiency": 1.0,
+      "budget_exhausted": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "one_shot",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010306596755981445,
+    "iterations": 1,
+    "token_usage": 953,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "one_shot",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.01040959358215332,
+    "iterations": 1,
+    "token_usage": 953,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "one_shot",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010363101959228516,
+    "iterations": 1,
+    "token_usage": 953,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "one_shot",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010290861129760742,
+    "iterations": 1,
+    "token_usage": 953,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "one_shot",
+    "run_id": 4,
+    "success": false,
+    "score": 0.125,
+    "execution_time": 0.010210037231445312,
+    "iterations": 1,
+    "token_usage": 953,
+    "metadata": {
+      "correct_answers": 1,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": true
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "chain_of_thought",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010220766067504883,
+    "iterations": 1,
+    "token_usage": 1025,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "chain_of_thought",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010419607162475586,
+    "iterations": 1,
+    "token_usage": 1025,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "chain_of_thought",
+    "run_id": 2,
+    "success": false,
+    "score": 0.125,
+    "execution_time": 0.010322093963623047,
+    "iterations": 1,
+    "token_usage": 1025,
+    "metadata": {
+      "correct_answers": 1,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": true
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "chain_of_thought",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010307550430297852,
+    "iterations": 1,
+    "token_usage": 1025,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "chain_of_thought",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.010345220565795898,
+    "iterations": 1,
+    "token_usage": 1025,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "loop_engine",
+    "run_id": 0,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.0005116462707519531,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "loop_engine",
+    "run_id": 1,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00038695335388183594,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "loop_engine",
+    "run_id": 2,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00036787986755371094,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "loop_engine",
+    "run_id": 3,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00035381317138671875,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  },
+  {
+    "task_id": "memory_001",
+    "task_name": "Memory-Intensive Task",
+    "method": "loop_engine",
+    "run_id": 4,
+    "success": false,
+    "score": 0.0,
+    "execution_time": 0.00030994415283203125,
+    "iterations": 100,
+    "token_usage": 0,
+    "metadata": {
+      "correct_answers": 0,
+      "total_questions": 8,
+      "question_results": [
+        {
+          "question": "What is Alice's job?",
+          "expected": "senior software engineer",
+          "correct": false
+        },
+        {
+          "question": "How old is her dog?",
+          "expected": "5",
+          "correct": false
+        },
+        {
+          "question": "Where did she graduate?",
+          "expected": "MIT",
+          "correct": false
+        },
+        {
+          "question": "What car did she buy?",
+          "expected": "Tesla Model 3",
+          "correct": false
+        },
+        {
+          "question": "What is her favorite color?",
+          "expected": "blue",
+          "correct": false
+        },
+        {
+          "question": "Where does she live?",
+          "expected": "Seattle",
+          "correct": false
+        },
+        {
+          "question": "When is her project deadline?",
+          "expected": "next Friday",
+          "correct": false
+        },
+        {
+          "question": "How many people are on her team?",
+          "expected": "8",
+          "correct": false
+        }
+      ],
+      "memory_consolidated": false
+    }
+  }
+]
