@@ -73,6 +73,37 @@ class RecoveryStrategy(Enum):
     CIRCUIT_BREAK = "circuit_break"
 
 
+class ExecutionState(Enum):
+    """Explicit execution states for the state machine."""
+    INITIALIZED = "initialized"
+    SPECIFYING = "specifying"
+    PLANNING = "planning"
+    ACTING = "acting"
+    OBSERVING = "observing"
+    EVALUATING = "evaluating"
+    VERIFYING = "verifying"
+    RECOVERING = "recovering"
+    REPLANNING = "replanning"
+    WAITING_FOR_HUMAN = "waiting_for_human"
+    COMPLETED = "completed"
+    PARTIALLY_COMPLETED = "partially_completed"
+    ABSTAINED = "abstained"
+    BUDGET_EXHAUSTED = "budget_exhausted"
+    POLICY_TERMINATED = "policy_terminated"
+    FAILED = "failed"
+
+
+class FailureStatus(Enum):
+    """Lifecycle status for failures."""
+    UNHANDLED = "unhandled"
+    RECOVERY_PLANNED = "recovery_planned"
+    RECOVERY_IN_PROGRESS = "recovery_in_progress"
+    RECOVERED = "recovered"
+    RECOVERY_FAILED = "recovery_failed"
+    ESCALATED = "escalated"
+    TERMINAL = "terminal"
+
+
 @dataclass
 class Step:
     """A single step in a plan."""
@@ -135,7 +166,7 @@ class Evaluation:
 
 @dataclass
 class Failure:
-    """A failure event."""
+    """A failure event with lifecycle tracking."""
     type: FailureType = FailureType.EXECUTION_ERROR
     message: str = ""
     step_id: Optional[str] = None
@@ -143,13 +174,54 @@ class Failure:
     context: Dict[str, Any] = field(default_factory=dict)
     timestamp: datetime = field(default_factory=datetime.now)
 
+    # Lifecycle tracking
+    failure_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
+    status: FailureStatus = FailureStatus.UNHANDLED
+    recovery_attempts: int = 0
+    max_recovery_attempts: int = 3
+    recovery_action_ids: List[str] = field(default_factory=list)
+    source_component: str = ""
+    evidence: Dict[str, Any] = field(default_factory=dict)
+
+    def can_recover(self) -> bool:
+        """Check if this failure can still be recovered."""
+        if not self.recoverable:
+            return False
+        if self.status in [FailureStatus.TERMINAL, FailureStatus.RECOVERY_FAILED]:
+            return False
+        return self.recovery_attempts < self.max_recovery_attempts
+
+    def record_recovery_attempt(self, action_id: str) -> None:
+        """Record a recovery attempt."""
+        self.recovery_attempts += 1
+        self.recovery_action_ids.append(action_id)
+        if self.recovery_attempts >= self.max_recovery_attempts:
+            self.status = FailureStatus.RECOVERY_FAILED
+        else:
+            self.status = FailureStatus.RECOVERY_IN_PROGRESS
+
+    def mark_recovered(self) -> None:
+        """Mark this failure as successfully recovered."""
+        self.status = FailureStatus.RECOVERED
+        self.recoverable = False
+
+    def mark_terminal(self) -> None:
+        """Mark this failure as terminal (cannot be recovered)."""
+        self.status = FailureStatus.TERMINAL
+        self.recoverable = False
+
 
 @dataclass
 class RecoveryAction:
-    """A recovery action."""
+    """A recovery action with explicit failure tracking."""
     strategy: RecoveryStrategy = RecoveryStrategy.RETRY
     params: Dict[str, Any] = field(default_factory=dict)
     estimated_success: float = 0.5
+    action_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
+    failure_id: Optional[str] = None  # Links to Failure.failure_id
+    timestamp: datetime = field(default_factory=datetime.now)
+    executed: bool = False
+    success: Optional[bool] = None
 
 
 @dataclass
