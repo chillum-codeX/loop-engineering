@@ -11,13 +11,15 @@ import os
 import sys
 import time
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 
-sys.path.insert(0, '/home/novix/workspace/project')
+# Use relative path or add parent to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
-# Direct imports to avoid circular dependency issues
 from loop_engine.core import LoopEngine, LoopConfig
 from loop_engine.types import LoopContext, Budget, ComponentType
 from loop_engine.components import (
@@ -45,7 +47,7 @@ class ExperimentConfig:
     model: str = "gpt-3.5-turbo"
     num_runs: int = 5
     random_seed: int = 42
-    output_dir: str = "/home/novix/workspace/project/experiments/results"
+    output_dir: str = "experiments/results"
 
 
 def set_seed(seed: int):
@@ -61,19 +63,26 @@ class ExperimentRunner:
         self.results: List[Dict] = []
         self.ablation_results: List[Dict] = []
         self.redteam_results: List[Dict] = []
-        os.makedirs(config.output_dir, exist_ok=True)
+
+        # Resolve output directory relative to project root
+        if not Path(config.output_dir).is_absolute():
+            output_path = project_root / config.output_dir
+        else:
+            output_path = Path(config.output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        self.output_path = output_path
 
     async def run_loop_engine(self, task_input: Dict[str, Any], loop_config: Optional[LoopConfig] = None) -> Dict[str, Any]:
         loop_config = loop_config or LoopConfig()
         engine = LoopEngine(loop_config)
 
-        # Use string keys for components
-        engine.components['Planner'] = LLMPlanner(self.llm_client, self.config.model)
-        engine.components['Actor'] = LLMActor(self.llm_client, self.config.model)
-        engine.components['Observer'] = SimpleObserver()
-        engine.components['Evaluator'] = LLMEvaluator(self.llm_client, self.config.model)
-        engine.components['Recovery'] = AdaptiveRecovery()
-        engine.components['Terminator'] = CombinedTerminator(self.llm_client)
+        # Register components using ComponentType enum keys (NOT strings)
+        engine.register_component(ComponentType.PLANNER, LLMPlanner(self.llm_client, self.config.model))
+        engine.register_component(ComponentType.ACTOR, LLMActor(self.llm_client, self.config.model))
+        engine.register_component(ComponentType.OBSERVER, SimpleObserver())
+        engine.register_component(ComponentType.EVALUATOR, LLMEvaluator(self.llm_client, self.config.model))
+        engine.register_component(ComponentType.RECOVERY, AdaptiveRecovery())
+        engine.register_component(ComponentType.TERMINATOR, CombinedTerminator(self.llm_client))
 
         context = LoopContext(goal=str(task_input), budget=Budget())
         result = await engine.run(context)
@@ -155,7 +164,7 @@ class ExperimentRunner:
                     result = await self.run_single_task(task, method, run_id)
                     self.results.append(result)
 
-        with open(os.path.join(self.config.output_dir, "main_results.json"), 'w') as f:
+        with open(self.output_path / "main_results.json", 'w') as f:
             json.dump(self.results, f, indent=2)
 
     async def run_ablation_studies(self):
@@ -189,7 +198,7 @@ class ExperimentRunner:
                     "token_usage": evaluation.token_usage
                 })
 
-        with open(os.path.join(self.config.output_dir, "ablation_results.json"), 'w') as f:
+        with open(self.output_path / "ablation_results.json", 'w') as f:
             json.dump(self.ablation_results, f, indent=2)
 
     async def run_red_teaming(self):
@@ -213,7 +222,7 @@ class ExperimentRunner:
                 "status": result["status"]
             })
 
-        with open(os.path.join(self.config.output_dir, "redteam_results.json"), 'w') as f:
+        with open(self.output_path / "redteam_results.json", 'w') as f:
             json.dump(self.redteam_results, f, indent=2)
 
     async def run_all(self):

@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Type, Union
 
@@ -65,6 +66,39 @@ class LoopConfig:
 
 
 @dataclass
+class ComponentCallCounters:
+    """Counters for component calls to verify execution."""
+    planner_called: int = 0
+    actor_called: int = 0
+    observer_called: int = 0
+    evaluator_called: int = 0
+    verifier_called: int = 0
+    safety_check_called: int = 0
+    recovery_called: int = 0
+    rollback_called: int = 0
+    memory_read: int = 0
+    memory_write: int = 0
+    budget_checked: int = 0
+    termination_checked: int = 0
+
+    def to_dict(self) -> Dict[str, int]:
+        return {
+            "planner_called": self.planner_called,
+            "actor_called": self.actor_called,
+            "observer_called": self.observer_called,
+            "evaluator_called": self.evaluator_called,
+            "verifier_called": self.verifier_called,
+            "safety_check_called": self.safety_check_called,
+            "recovery_called": self.recovery_called,
+            "rollback_called": self.rollback_called,
+            "memory_read": self.memory_read,
+            "memory_write": self.memory_write,
+            "budget_checked": self.budget_checked,
+            "termination_checked": self.termination_checked,
+        }
+
+
+@dataclass
 class LoopState:
     """State maintained during loop execution."""
     status: LoopStatus = LoopStatus.PENDING
@@ -76,6 +110,7 @@ class LoopState:
     failures: List[Failure] = field(default_factory=list)
     recoveries: List[RecoveryAction] = field(default_factory=list)
     messages: List[AgentMessage] = field(default_factory=list)
+    counters: ComponentCallCounters = field(default_factory=ComponentCallCounters)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -89,7 +124,97 @@ class LoopState:
             "num_evaluations": len(self.evaluations),
             "num_failures": len(self.failures),
             "num_recoveries": len(self.recoveries),
+            "counters": self.counters.to_dict(),
         }
+
+
+class ComponentRegistry:
+    """
+    Validated component registry that enforces type-safe component registration.
+
+    - Accepts only ComponentType enum keys
+    - Rejects string keys
+    - Validates component implements expected interface
+    - Rejects duplicate registration unless replacement is explicit
+    """
+
+    def __init__(self):
+        self._components: Dict[ComponentType, Any] = {}
+        self._interface_map = {
+            ComponentType.PLANNER: ['create_plan', 'revise_plan'],
+            ComponentType.ACTOR: ['execute', 'execute_direct'],
+            ComponentType.OBSERVER: ['observe'],
+            ComponentType.EVALUATOR: ['evaluate'],
+            ComponentType.RECOVERY: ['recover'],
+            ComponentType.TERMINATOR: ['should_terminate'],
+        }
+
+    def register(
+        self,
+        component_type: ComponentType,
+        component: Any,
+        allow_replace: bool = False
+    ) -> None:
+        """
+        Register a component with strict validation.
+
+        Args:
+            component_type: ComponentType enum value
+            component: Component instance implementing required interface
+            allow_replace: If True, allows replacing existing component
+
+        Raises:
+            TypeError: If component_type is not a ComponentType enum
+            ValueError: If component doesn't implement required interface
+            RuntimeError: If component already registered and allow_replace=False
+        """
+        # Validate component_type is enum, not string
+        if not isinstance(component_type, ComponentType):
+            raise TypeError(
+                f"Component type must be ComponentType enum, got {type(component_type).__name__}. "
+                f"Use ComponentType.{str(component_type).upper()} instead of '{component_type}'"
+            )
+
+        # Check for duplicates
+        if component_type in self._components and not allow_replace:
+            raise RuntimeError(
+                f"Component {component_type.value} already registered. "
+                f"Use allow_replace=True to replace."
+            )
+
+        # Validate interface
+        required_methods = self._interface_map.get(component_type, [])
+        missing_methods = [
+            method for method in required_methods
+            if not hasattr(component, method) or not callable(getattr(component, method))
+        ]
+        if missing_methods:
+            raise ValueError(
+                f"Component {component_type.value} missing required methods: {missing_methods}"
+            )
+
+        self._components[component_type] = component
+        logger.debug(f"Registered component: {component_type.value}")
+
+    def get(self, component_type: ComponentType) -> Optional[Any]:
+        """Get a registered component."""
+        if not isinstance(component_type, ComponentType):
+            raise TypeError(f"Component type must be ComponentType enum, got {type(component_type).__name__}")
+        return self._components.get(component_type)
+
+    def has(self, component_type: ComponentType) -> bool:
+        """Check if component is registered."""
+        if not isinstance(component_type, ComponentType):
+            raise TypeError(f"Component type must be ComponentType enum, got {type(component_type).__name__}")
+        return component_type in self._components
+
+    def list_registered(self) -> List[str]:
+        """List registered component type names."""
+        return [ct.value for ct in self._components.keys()]
+
+    def clear(self) -> None:
+        """Clear all registrations."""
+        self._components.clear()
 
 
 class LoopEngine:
@@ -103,26 +228,40 @@ class LoopEngine:
         config = LoopConfig(max_iterations=50)
         engine = LoopEngine(config)
 
+        # Register components using ComponentType enum
+        engine.register_component(ComponentType.PLANNER, planner)
+        engine.register_component(ComponentType.ACTOR, actor)
+
         context = LoopContext(goal="Solve a complex problem")
         result = await engine.run(context)
     """
 
     def __init__(self, config: Optional[LoopConfig] = None):
         self.config = config or LoopConfig()
-        self.components: Dict[ComponentType, Any] = {}
+        self.components = ComponentRegistry()
         self.state: Optional[LoopState] = None
         self.budget: Optional[Budget] = None
         self._setup_logging()
 
     def _setup_logging(self):
         """Configure logging."""
-        level = getattr(logging, self.config.log_level)
+        level = getattr(logging, self.config.log_level, logging.INFO)
         logging.basicConfig(level=level)
 
-    def register_component(self, component_type: ComponentType, component: Any):
-        """Register a component with the engine."""
-        self.components[component_type] = component
-        logger.debug(f"Registered component: {component_type.value}")
+    def register_component(self, component_type: ComponentType, component: Any, allow_replace: bool = False):
+        """
+        Register a component with the engine.
+
+        Args:
+            component_type: ComponentType enum (PLANNER, ACTOR, etc.)
+            component: Component instance
+            allow_replace: Allow replacing existing registration
+
+        Raises:
+            TypeError: If component_type is not ComponentType enum
+            ValueError: If component doesn't implement required interface
+        """
+        self.components.register(component_type, component, allow_replace)
 
     def get_component(self, component_type: ComponentType) -> Optional[Any]:
         """Get a registered component."""
@@ -165,7 +304,7 @@ class LoopEngine:
                 if await self._check_termination(context):
                     break
 
-            # Determine final status
+            # Determine final status - must NOT be RUNNING
             result.status = self._determine_final_status()
             result.output = self._extract_output()
             result.plan = self.state.current_plan
@@ -237,6 +376,8 @@ class LoopEngine:
         if not planner:
             return
 
+        self.state.counters.planner_called += 1
+
         # Create initial plan if none exists
         if not self.state.current_plan:
             plan = await planner.create_plan(context.goal, context.initial_context)
@@ -260,6 +401,8 @@ class LoopEngine:
         actor = self.components.get(ComponentType.ACTOR)
         if not actor:
             return None
+
+        self.state.counters.actor_called += 1
 
         # Get next step from plan
         if self.state.current_plan:
@@ -302,6 +445,8 @@ class LoopEngine:
         if not observer:
             return
 
+        self.state.counters.observer_called += 1
+
         observation = await observer.observe(
             action_result,
             self.state.current_step,
@@ -317,6 +462,8 @@ class LoopEngine:
         evaluator = self.components.get(ComponentType.EVALUATOR)
         if not evaluator:
             return None
+
+        self.state.counters.evaluator_called += 1
 
         evaluation = await evaluator.evaluate(
             self.state.current_plan,
@@ -337,24 +484,30 @@ class LoopEngine:
         if not recovery:
             return
 
-        # Get recent failures
-        recent_failures = [f for f in self.state.failures
-                          if f.recoverable and f not in [r.get('failure') for r in
-                          [{'failure': fa} for fa in self.state.failures]]]
+        # Get recent UNRECOVERED failures
+        recent_failures = [
+            f for f in self.state.failures
+            if f.recoverable and not getattr(f, '_recovery_attempted', False)
+        ]
 
         if not recent_failures:
             return
 
         failure = recent_failures[-1]
 
-        # Check recovery attempts
-        recovery_attempts = sum(1 for r in self.state.recoveries
-                               if r.params.get('failure_id') == failure)
+        # Check recovery attempts for this specific failure
+        recovery_attempts = sum(
+            1 for r in self.state.recoveries
+            if getattr(r, '_failure_id', None) == id(failure)
+        )
 
         if recovery_attempts >= self.config.max_recovery_attempts:
             logger.warning(f"Max recovery attempts reached for failure: {failure.type}")
             failure.recoverable = False
             return
+
+        # Mark failure as having recovery attempted
+        failure._recovery_attempted = True
 
         recovery_action = await recovery.recover(
             failure,
@@ -362,7 +515,11 @@ class LoopEngine:
             context
         )
 
+        # Track which failure this recovery is for
+        recovery_action._failure_id = id(failure)
+
         self.state.recoveries.append(recovery_action)
+        self.state.counters.recovery_called += 1
         self.state.status = LoopStatus.RECOVERING
 
         if self.config.verbose:
@@ -370,6 +527,8 @@ class LoopEngine:
 
     async def _check_termination(self, context: LoopContext) -> bool:
         """Check if loop should terminate."""
+        self.state.counters.termination_checked += 1
+
         terminator = self.components.get(ComponentType.TERMINATOR)
         if not terminator:
             # Simple termination: goal achieved or plan completed
@@ -392,14 +551,23 @@ class LoopEngine:
 
     def _determine_final_status(self) -> LoopStatus:
         """Determine the final status of the loop."""
+        # CRITICAL: Must never return RUNNING after execution completes
         if self.state.status == LoopStatus.TERMINATED:
             return LoopStatus.COMPLETED
         elif any(not f.recoverable for f in self.state.failures):
             return LoopStatus.FAILED
         elif self.state.current_plan and self.state.current_plan.get_progress() >= 1.0:
             return LoopStatus.COMPLETED
+        elif self.state.status == LoopStatus.RECOVERING:
+            # After recovery, check if we can complete
+            if self.state.current_plan and self.state.current_plan.get_progress() >= 1.0:
+                return LoopStatus.COMPLETED
+            return LoopStatus.FAILED
+        elif self.state.current_iteration >= self.config.max_iterations:
+            return LoopStatus.FAILED
         else:
-            return self.state.status
+            # Default: if we exited the loop without termination, it's a failure
+            return LoopStatus.FAILED
 
     def _extract_output(self) -> Any:
         """Extract the final output from execution state."""
