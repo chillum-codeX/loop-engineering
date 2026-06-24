@@ -82,7 +82,7 @@ class TestStateMachine:
         with pytest.raises(RuntimeError) as exc_info:
             engine._transition_to(ExecutionState.PLANNING)
 
-        assert "Invalid state transition" in str(exc_info.value)
+        assert "Cannot transition from terminal state" in str(exc_info.value)
 
     @pytest.mark.asyncio
     async def test_valid_state_transitions(self):

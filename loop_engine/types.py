@@ -63,6 +63,58 @@ class FailureType(Enum):
     RECOVERY_EXHAUSTED = "recovery_exhausted"
 
 
+class StepStatus(Enum):
+    """Explicit step lifecycle states with typed transitions."""
+    # Initial states
+    PENDING = "pending"
+    READY = "ready"
+    BLOCKED = "blocked"
+
+    # Execution states
+    IN_PROGRESS = "in_progress"
+    EXECUTED = "executed"
+
+    # Evaluation states
+    EVALUATION_FAILED = "evaluation_failed"
+    EVALUATED = "evaluated"
+
+    # Verification states
+    VERIFICATION_FAILED = "verification_failed"
+    VERIFIED_COMPLETED = "verified_completed"
+
+    # Recovery states
+    RECOVERY_PENDING = "recovery_pending"
+    RETRY_PENDING = "retry_pending"
+
+    # Terminal states
+    SKIPPED = "skipped"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+
+# States that count as completed for plan progress
+COMPLETION_STATES = {
+    StepStatus.VERIFIED_COMPLETED,
+    StepStatus.SKIPPED,
+}
+
+# States that block progress (not completed)
+BLOCKING_STATES = {
+    StepStatus.PENDING,
+    StepStatus.READY,
+    StepStatus.BLOCKED,
+    StepStatus.IN_PROGRESS,
+    StepStatus.EXECUTED,
+    StepStatus.EVALUATION_FAILED,
+    StepStatus.EVALUATED,  # When verification required
+    StepStatus.VERIFICATION_FAILED,
+    StepStatus.RECOVERY_PENDING,
+    StepStatus.RETRY_PENDING,
+    StepStatus.FAILED,
+    StepStatus.CANCELLED,
+}
+
+
 class RecoveryStrategy(Enum):
     """Strategies for recovering from failures."""
     RETRY = "retry"
@@ -82,6 +134,7 @@ class ExecutionState(Enum):
     OBSERVING = "observing"
     EVALUATING = "evaluating"
     VERIFYING = "verifying"
+    ITERATION_COMPLETE = "iteration_complete"  # End of iteration boundary
     RECOVERING = "recovering"
     REPLANNING = "replanning"
     WAITING_FOR_HUMAN = "waiting_for_human"
@@ -106,15 +159,27 @@ class FailureStatus(Enum):
 
 @dataclass
 class Step:
-    """A single step in a plan."""
+    """A single step in a plan with explicit lifecycle tracking."""
     id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     description: str = ""
     dependencies: List[str] = field(default_factory=list)
-    status: str = "pending"  # pending, in_progress, completed, failed
+    status: StepStatus = StepStatus.PENDING
     output: Any = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+
+    # Evaluation and verification tracking
+    evaluation_passed: Optional[bool] = None
+    verification_passed: Optional[bool] = None
+
+    def is_completed(self) -> bool:
+        """Check if step is in a completion state."""
+        return self.status in COMPLETION_STATES
+
+    def is_blocking(self) -> bool:
+        """Check if step blocks plan progress."""
+        return self.status in BLOCKING_STATES or self.status == StepStatus.EVALUATED
 
 
 @dataclass
@@ -129,9 +194,9 @@ class Plan:
 
     def get_next_step(self) -> Optional[Step]:
         """Get the next pending step with satisfied dependencies."""
-        completed_ids = {s.id for s in self.steps if s.status == "completed"}
+        completed_ids = {s.id for s in self.steps if s.is_completed()}
         for step in self.steps:
-            if step.status == "pending":
+            if step.status == StepStatus.PENDING or step.status == StepStatus.READY:
                 if all(dep in completed_ids for dep in step.dependencies):
                     return step
         return None
@@ -140,8 +205,14 @@ class Plan:
         """Calculate plan completion progress (0.0 to 1.0)."""
         if not self.steps:
             return 0.0
-        completed = sum(1 for s in self.steps if s.status == "completed")
+        completed = sum(1 for s in self.steps if s.is_completed())
         return completed / len(self.steps)
+
+    def is_complete(self) -> bool:
+        """Check if all steps are in completion states."""
+        if not self.steps:
+            return False
+        return all(s.is_completed() for s in self.steps)
 
 
 @dataclass

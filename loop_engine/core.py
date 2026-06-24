@@ -33,6 +33,7 @@ from .types import (
     Plan,
     RecoveryAction,
     Step,
+    StepStatus,
 )
 
 logger = logging.getLogger(__name__)
@@ -255,21 +256,37 @@ class LoopEngine:
 
     # Valid state transitions for the execution state machine
     _VALID_TRANSITIONS: Dict[ExecutionState, Set[ExecutionState]] = {
+        # Normal path
         ExecutionState.INITIALIZED: {ExecutionState.PLANNING, ExecutionState.FAILED},
         ExecutionState.PLANNING: {ExecutionState.ACTING, ExecutionState.RECOVERING, ExecutionState.FAILED},
-        ExecutionState.ACTING: {ExecutionState.OBSERVING, ExecutionState.RECOVERING, ExecutionState.FAILED},
-        ExecutionState.OBSERVING: {ExecutionState.EVALUATING, ExecutionState.RECOVERING, ExecutionState.FAILED},
-        ExecutionState.EVALUATING: {ExecutionState.VERIFYING, ExecutionState.RECOVERING, ExecutionState.REPLANNING, ExecutionState.COMPLETED, ExecutionState.FAILED},
-        ExecutionState.VERIFYING: {ExecutionState.COMPLETED, ExecutionState.RECOVERING, ExecutionState.REPLANNING, ExecutionState.FAILED},
-        ExecutionState.RECOVERING: {ExecutionState.REPLANNING, ExecutionState.ACTING, ExecutionState.FAILED, ExecutionState.PARTIALLY_COMPLETED},
+        ExecutionState.ACTING: {ExecutionState.OBSERVING, ExecutionState.EVALUATING, ExecutionState.RECOVERING, ExecutionState.FAILED},
+        ExecutionState.OBSERVING: {ExecutionState.EVALUATING, ExecutionState.ITERATION_COMPLETE, ExecutionState.RECOVERING, ExecutionState.FAILED},
+        ExecutionState.EVALUATING: {ExecutionState.VERIFYING, ExecutionState.ITERATION_COMPLETE, ExecutionState.RECOVERING, ExecutionState.REPLANNING, ExecutionState.FAILED},
+        ExecutionState.VERIFYING: {ExecutionState.ITERATION_COMPLETE, ExecutionState.RECOVERING, ExecutionState.FAILED},
+
+        # Iteration boundary
+        ExecutionState.ITERATION_COMPLETE: {
+            ExecutionState.PLANNING,  # Next iteration
+            ExecutionState.COMPLETED,  # All done
+            ExecutionState.REPLANNING,  # Plan needs update
+            ExecutionState.RECOVERING,  # Handle failures
+            ExecutionState.WAITING_FOR_HUMAN,  # Escalate
+            ExecutionState.BUDGET_EXHAUSTED,  # Out of budget
+            ExecutionState.FAILED,  # Unrecoverable
+        },
+
+        # Recovery paths
+        ExecutionState.RECOVERING: {ExecutionState.REPLANNING, ExecutionState.ITERATION_COMPLETE, ExecutionState.WAITING_FOR_HUMAN, ExecutionState.FAILED, ExecutionState.PARTIALLY_COMPLETED},
         ExecutionState.REPLANNING: {ExecutionState.PLANNING, ExecutionState.FAILED},
-        ExecutionState.COMPLETED: set(),  # Terminal state
-        ExecutionState.PARTIALLY_COMPLETED: set(),  # Terminal state
-        ExecutionState.ABSTAINED: set(),  # Terminal state
-        ExecutionState.BUDGET_EXHAUSTED: set(),  # Terminal state
-        ExecutionState.POLICY_TERMINATED: set(),  # Terminal state
-        ExecutionState.FAILED: set(),  # Terminal state
         ExecutionState.WAITING_FOR_HUMAN: {ExecutionState.RECOVERING, ExecutionState.REPLANNING, ExecutionState.FAILED},
+
+        # Terminal states (no outgoing transitions)
+        ExecutionState.COMPLETED: set(),
+        ExecutionState.PARTIALLY_COMPLETED: set(),
+        ExecutionState.ABSTAINED: set(),
+        ExecutionState.BUDGET_EXHAUSTED: set(),
+        ExecutionState.POLICY_TERMINATED: set(),
+        ExecutionState.FAILED: set(),
     }
 
     def _transition_to(self, new_state: ExecutionState) -> None:
@@ -286,6 +303,19 @@ class LoopEngine:
             raise RuntimeError("Cannot transition: state is None")
 
         current_state = self.state.execution_state
+
+        # Check if current state is terminal
+        if current_state in {
+            ExecutionState.COMPLETED,
+            ExecutionState.PARTIALLY_COMPLETED,
+            ExecutionState.ABSTAINED,
+            ExecutionState.BUDGET_EXHAUSTED,
+            ExecutionState.POLICY_TERMINATED,
+            ExecutionState.FAILED,
+        }:
+            raise RuntimeError(
+                f"Cannot transition from terminal state {current_state.value}"
+            )
 
         # Check if transition is valid
         valid_next_states = self._VALID_TRANSITIONS.get(current_state, set())
@@ -336,55 +366,204 @@ class LoopEngine:
         result = LoopResult(status=LoopStatus.RUNNING)
 
         try:
-            # Main execution loop
-            while self._should_continue():
+            # Main execution loop with iteration boundary
+            while True:
                 self.state.current_iteration += 1
                 iteration_start = time.time()
 
                 if self.config.verbose:
                     logger.info(f"=== Iteration {self.state.current_iteration} ===")
 
-                # Execute one iteration with state tracking
+                # Execute one iteration
                 await self._execute_iteration(context)
 
-                # Update budget
-                if self.budget:
-                    self.budget.steps_used += 1
-                    self.budget.time_used += time.time() - iteration_start
+                # At ITERATION_COMPLETE, decide next state
+                next_state = await self._handle_iteration_complete(context)
 
-                # Check for termination
-                if await self._check_termination(context):
+                if next_state in {
+                    ExecutionState.COMPLETED,
+                    ExecutionState.PARTIALLY_COMPLETED,
+                    ExecutionState.ABSTAINED,
+                    ExecutionState.BUDGET_EXHAUSTED,
+                    ExecutionState.POLICY_TERMINATED,
+                    ExecutionState.FAILED,
+                }:
+                    # Terminal state - break loop
+                    self._transition_to(next_state)
                     break
+                elif next_state == ExecutionState.PLANNING:
+                    # Continue to next iteration
+                    self._transition_to(ExecutionState.PLANNING)
+                    # Update budget before next iteration
+                    if self.budget:
+                        self.budget.steps_used += 1
+                        self.budget.time_used += time.time() - iteration_start
+                    continue
+                elif next_state == ExecutionState.RECOVERING:
+                    # Handle recovery
+                    await self._execute_recovery(context)
+                    # After recovery, continue to next iteration or fail
+                    if self.state.execution_state == ExecutionState.FAILED:
+                        break
+                    # Update budget
+                    if self.budget:
+                        self.budget.steps_used += 1
+                        self.budget.time_used += time.time() - iteration_start
+                    continue
+                elif next_state == ExecutionState.REPLANNING:
+                    # Replan and continue
+                    self._transition_to(ExecutionState.REPLANNING)
+                    await self._execute_replanning(context)
+                    # Update budget
+                    if self.budget:
+                        self.budget.steps_used += 1
+                        self.budget.time_used += time.time() - iteration_start
+                    continue
 
-            # Determine final status - must NOT be RUNNING
-            result.status = self._determine_final_status()
-            result.output = self._extract_output()
-            result.plan = self.state.current_plan
-            result.iterations = self.state.current_iteration
+            # Build final result
+            result = self._build_result(start_time)
 
         except Exception as e:
             logger.error(f"Loop execution failed: {e}")
-            result.status = LoopStatus.FAILED
-            if self.state:
-                self.state.execution_state = ExecutionState.FAILED
-            result.failures.append(Failure(
-                type=FailureType.EXECUTION_ERROR,
-                message=str(e),
-                recoverable=False
-            ))
-        finally:
-            result.execution_time = time.time() - start_time
-            result.failures = self.state.failures.copy() if self.state else []
-            result.recoveries = self.state.recoveries.copy() if self.state else []
-            result.evaluations = self.state.evaluations.copy() if self.state else []
-            if self.budget:
-                result.token_usage = self.budget.tokens_used
-                result.cost = self.budget.cost_used
+            self._handle_exception(e)
+            result = self._build_result(start_time)
 
         return result
 
+    async def _handle_iteration_complete(self, context: LoopContext) -> ExecutionState:
+        """
+        Decide next state at iteration boundary.
+
+        Returns:
+            ExecutionState to transition to
+        """
+        # 1. Check budget
+        if self.budget and not self.budget.check_budget():
+            logger.info("Budget exhausted at iteration boundary")
+            return ExecutionState.BUDGET_EXHAUSTED
+
+        # 2. Check max iterations
+        if self.state.current_iteration >= self.config.max_iterations:
+            logger.info("Max iterations reached at iteration boundary")
+            return ExecutionState.BUDGET_EXHAUSTED
+
+        # 3. Check for terminal failures
+        if any(f.status == FailureStatus.TERMINAL for f in self.state.failures):
+            logger.info("Terminal failure detected at iteration boundary")
+            return ExecutionState.FAILED
+
+        # 4. Check for unhandled failures requiring recovery
+        unhandled_failures = [
+            f for f in self.state.failures
+            if f.status == FailureStatus.UNHANDLED
+        ]
+        if unhandled_failures:
+            if self.config.enable_recovery:
+                logger.info(f"Unhandled failures detected, entering recovery")
+                return ExecutionState.RECOVERING
+            else:
+                logger.info("Unhandled failures with recovery disabled")
+                return ExecutionState.FAILED
+
+        # 5. Check if plan is complete
+        if self.state.current_plan and self._is_plan_complete():
+            logger.info("Plan complete - all steps verified")
+            return ExecutionState.COMPLETED
+
+        # 6. Continue to next iteration
+        return ExecutionState.PLANNING
+
+    def _is_plan_complete(self) -> bool:
+        """Check if plan is complete (all required steps verified)."""
+        if not self.state.current_plan:
+            return False
+
+        for step in self.state.current_plan.steps:
+            # Count only VERIFIED_COMPLETED steps
+            if step.status != StepStatus.VERIFIED_COMPLETED:
+                return False
+
+        return True
+
+    def _build_result(self, start_time: float) -> LoopResult:
+        """Build final result from state."""
+        result = LoopResult()
+
+        # Determine final status
+        if self.state.execution_state == ExecutionState.COMPLETED:
+            result.status = LoopStatus.COMPLETED
+        elif self.state.execution_state in {
+            ExecutionState.BUDGET_EXHAUSTED,
+            ExecutionState.FAILED,
+            ExecutionState.POLICY_TERMINATED,
+        }:
+            result.status = LoopStatus.FAILED
+        else:
+            # Should not happen - force to FAILED
+            logger.warning(f"Unexpected final state {self.state.execution_state}, marking as FAILED")
+            result.status = LoopStatus.FAILED
+            self.state.execution_state = ExecutionState.FAILED
+
+        result.output = self._extract_output()
+        result.plan = self.state.current_plan
+        result.iterations = self.state.current_iteration
+        result.execution_time = time.time() - start_time
+        result.failures = self.state.failures.copy()
+        result.recoveries = self.state.recoveries.copy()
+        result.evaluations = self.state.evaluations.copy()
+
+        if self.budget:
+            result.token_usage = self.budget.tokens_used
+            result.cost = self.budget.cost_used
+
+        return result
+
+    def _handle_exception(self, e: Exception) -> None:
+        """Handle exception during execution."""
+        # Create failure record
+        failure = Failure(
+            type=FailureType.EXECUTION_ERROR,
+            message=str(e),
+            recoverable=False,
+            max_recovery_attempts=self.config.max_recovery_attempts
+        )
+        failure.mark_terminal()
+        self.state.failures.append(failure)
+
+        # Transition to FAILED
+        self.state.execution_state = ExecutionState.FAILED
+        self.state.status = LoopStatus.FAILED
+
+    async def _execute_replanning(self, context: LoopContext) -> None:
+        """Execute replanning after recovery."""
+        planner = self.components.get(ComponentType.PLANNER)
+        if not planner:
+            return
+
+        try:
+            plan = await planner.revise_plan(
+                self.state.current_plan,
+                self.state.observations,
+                self.state.evaluations
+            )
+            self.state.current_plan = plan
+            if self.config.verbose:
+                logger.info(f"Revised plan to version {plan.version}")
+        except Exception as e:
+            logger.error(f"Replanning failed: {e}")
+            failure = Failure(
+                type=FailureType.PLANNING_FAILURE,
+                message=f"Replanning failed: {e}",
+                recoverable=False,
+                max_recovery_attempts=self.config.max_recovery_attempts
+            )
+            failure.mark_terminal()
+            self.state.failures.append(failure)
+            self.state.execution_state = ExecutionState.FAILED
+
     def _should_continue(self) -> bool:
         """Check if the loop should continue executing."""
+        # This method is deprecated - iteration control is now in run()
         if self.state.current_iteration >= self.config.max_iterations:
             logger.info("Max iterations reached")
             return False
@@ -394,7 +573,8 @@ class LoopEngine:
             self.state.failures.append(Failure(
                 type=FailureType.BUDGET_EXCEEDED,
                 message="Execution budget has been exhausted",
-                recoverable=False
+                recoverable=False,
+                max_recovery_attempts=self.config.max_recovery_attempts
             ))
             self.state.execution_state = ExecutionState.BUDGET_EXHAUSTED
             return False
@@ -408,31 +588,66 @@ class LoopEngine:
         """Execute a single iteration of the loop with state transitions."""
         # 1. PLANNING: Create or revise plan
         if self.config.enable_planner:
-            self._transition_to(ExecutionState.PLANNING)
+            if self.state.execution_state == ExecutionState.INITIALIZED:
+                self._transition_to(ExecutionState.PLANNING)
             await self._execute_planning(context)
+        else:
+            # Without planner, we need a fixed plan or direct execution
+            if self.config.verbose:
+                logger.debug("Planner disabled - using direct execution or fixed plan")
 
         # 2. ACTION: Execute current step
         self._transition_to(ExecutionState.ACTING)
         action_result = await self._execute_action(context)
 
-        # 3. OBSERVATION: Capture results
+        # 3. OBSERVATION: Capture results (if enabled)
         if self.config.enable_observer:
             self._transition_to(ExecutionState.OBSERVING)
             await self._execute_observation(action_result, context)
+        else:
+            # Observer disabled - skip to evaluation or iteration complete
+            if self.config.verbose:
+                logger.debug("Observer disabled - skipping observation")
 
-        # 4. EVALUATION: Assess progress
+        # 4. EVALUATION: Assess progress (if enabled)
         if self.config.enable_evaluator:
-            self._transition_to(ExecutionState.EVALUATING)
+            if self.state.execution_state == ExecutionState.OBSERVING:
+                self._transition_to(ExecutionState.EVALUATING)
+            elif self.state.execution_state == ExecutionState.ACTING:
+                # Observer was disabled
+                self._transition_to(ExecutionState.EVALUATING)
+
             evaluation = await self._execute_evaluation(context)
 
             # 5. RECOVERY: Handle failures if needed
             if self.config.enable_recovery and evaluation and not evaluation.passed:
                 await self._execute_recovery(context, evaluation)
-                # After recovery, transition back to a valid state for next iteration
-                if self.state.execution_state == ExecutionState.RECOVERING:
-                    # Stay in recovering or transition to replanning
-                    if self.state.failures and any(f.can_recover() for f in self.state.failures):
-                        self._transition_to(ExecutionState.REPLANNING)
+                # After recovery, we'll be in RECOVERING or REPLANNING state
+        else:
+            # Evaluator disabled - skip to iteration complete
+            if self.config.verbose:
+                logger.debug("Evaluator disabled - skipping evaluation")
+
+        # Transition to ITERATION_COMPLETE at end of iteration
+        # Determine the correct path based on current state
+        if self.state.execution_state == ExecutionState.EVALUATING:
+            self._transition_to(ExecutionState.ITERATION_COMPLETE)
+        elif self.state.execution_state == ExecutionState.OBSERVING:
+            # Evaluator disabled path
+            self._transition_to(ExecutionState.ITERATION_COMPLETE)
+        elif self.state.execution_state == ExecutionState.ACTING:
+            # Both observer and evaluator disabled path
+            self._transition_to(ExecutionState.ITERATION_COMPLETE)
+        elif self.state.execution_state == ExecutionState.RECOVERING:
+            # After recovery, transition to ITERATION_COMPLETE
+            self._transition_to(ExecutionState.ITERATION_COMPLETE)
+        elif self.state.execution_state == ExecutionState.REPLANNING:
+            # After replanning, transition to ITERATION_COMPLETE
+            self._transition_to(ExecutionState.ITERATION_COMPLETE)
+        else:
+            # Already in terminal state or unexpected state
+            if self.config.verbose:
+                logger.debug(f"Iteration ending in state {self.state.execution_state.value}")
 
     async def _execute_planning(self, context: LoopContext):
         """Execute planning phase."""
@@ -461,7 +676,7 @@ class LoopEngine:
                     logger.info(f"Revised plan to version {plan.version}")
 
     async def _execute_action(self, context: LoopContext) -> Any:
-        """Execute action phase."""
+        """Execute action phase with proper step lifecycle."""
         actor = self.components.get(ComponentType.ACTOR)
         if not actor:
             return None
@@ -476,26 +691,32 @@ class LoopEngine:
             step = None
 
         if step:
-            step.status = "in_progress"
+            # Actor sets IN_PROGRESS when starting
+            step.status = StepStatus.IN_PROGRESS
             step.start_time = time.time()
 
             try:
                 result = await actor.execute(step, self.state.observations, context)
                 step.output = result
-                step.status = "completed"
+
+                # Actor sets EXECUTED when completing (NOT completed - that's for evaluator/verifier)
+                step.status = StepStatus.EXECUTED
                 step.end_time = time.time()
 
                 if self.config.verbose:
                     logger.info(f"Executed step {step.id}: {step.description[:50]}...")
 
             except Exception as e:
-                step.status = "failed"
-                self.state.failures.append(Failure(
+                # Actor failure creates FAILURE status
+                step.status = StepStatus.FAILED
+                failure = Failure(
                     type=FailureType.EXECUTION_ERROR,
                     message=str(e),
                     step_id=step.id,
-                    recoverable=True
-                ))
+                    recoverable=True,
+                    max_recovery_attempts=self.config.max_recovery_attempts
+                )
+                self.state.failures.append(failure)
                 return None
         else:
             # No steps available - direct execution
@@ -522,7 +743,7 @@ class LoopEngine:
             logger.debug(f"Observation recorded from {observation.source}")
 
     async def _execute_evaluation(self, context: LoopContext) -> Optional[Evaluation]:
-        """Execute evaluation phase."""
+        """Execute evaluation phase with proper step lifecycle."""
         evaluator = self.components.get(ComponentType.EVALUATOR)
         if not evaluator:
             return None
@@ -537,12 +758,40 @@ class LoopEngine:
         )
         self.state.evaluations.append(evaluation)
 
+        # Update current step status based on evaluation
+        if self.state.current_step and evaluation:
+            self.state.current_step.evaluation_passed = evaluation.passed
+
+            if evaluation.passed:
+                # Evaluator sets EVALUATED (not completed - verification may be needed)
+                self.state.current_step.status = StepStatus.EVALUATED
+
+                # If verification disabled, auto-promote to VERIFIED_COMPLETED
+                if not self.config.enable_verification:
+                    self.state.current_step.status = StepStatus.VERIFIED_COMPLETED
+                    self.state.current_step.verification_passed = True
+                    if self.config.verbose:
+                        logger.info(f"Step {self.state.current_step.id} completed (verification disabled)")
+            else:
+                # Evaluator sets EVALUATION_FAILED
+                self.state.current_step.status = StepStatus.EVALUATION_FAILED
+
+                # Create failure record
+                failure = Failure(
+                    type=FailureType.VERIFICATION_FAILED,
+                    message=f"Evaluation failed: {evaluation.feedback}",
+                    step_id=self.state.current_step.id,
+                    recoverable=True,
+                    max_recovery_attempts=self.config.max_recovery_attempts
+                )
+                self.state.failures.append(failure)
+
         if self.config.verbose:
             logger.info(f"Evaluation: score={evaluation.score:.2f}, passed={evaluation.passed}")
 
         return evaluation
 
-    async def _execute_recovery(self, context: LoopContext, evaluation: Evaluation):
+    async def _execute_recovery(self, context: LoopContext, evaluation: Optional[Evaluation] = None):
         """
         Execute recovery phase with explicit failure lifecycle tracking.
 
@@ -668,8 +917,9 @@ class LoopEngine:
         """Extract the final output from execution state."""
         # Try to get output from completed plan
         if self.state.current_plan:
+            # Get VERIFIED_COMPLETED steps
             completed_steps = [s for s in self.state.current_plan.steps
-                             if s.status == "completed" and s.output is not None]
+                             if s.status == StepStatus.VERIFIED_COMPLETED and s.output is not None]
             if completed_steps:
                 # Return the last completed step's output
                 return completed_steps[-1].output
