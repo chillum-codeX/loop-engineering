@@ -4,9 +4,38 @@ Base classes for benchmark tasks.
 
 from __future__ import annotations
 
+import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+
+
+def _normalize_answer(answer: str) -> str:
+    """Normalize answer string for comparison."""
+    return answer.lower().strip().rstrip('.').replace('$', '').replace(',', '').replace(' ', '')
+
+
+def _create_result(
+    task_id: str,
+    success: bool,
+    score: float,
+    metadata: Dict[str, Any],
+    error: Optional[str] = None,
+    start_time: Optional[float] = None
+) -> BenchmarkResult:
+    """Create a BenchmarkResult with timing."""
+    execution_time = time.time() - start_time if start_time else 0.0
+    return BenchmarkResult(
+        task_id=task_id,
+        success=success,
+        score=score,
+        execution_time=execution_time,
+        iterations=metadata.get('iterations', 0),
+        token_usage=metadata.get('token_usage', 0),
+        cost=metadata.get('cost', 0.0),
+        metadata=metadata,
+        error=error
+    )
 
 
 @dataclass
@@ -89,9 +118,54 @@ class MultiHopReasoningTask(BenchmarkTask):
         return random.choice(self.questions)
 
     def evaluate(self, output: Any, expected: Optional[str] = None) -> BenchmarkResult:
-        """Evaluate the answer."""
-        # This will be implemented with actual execution results
-        pass
+        """Evaluate the answer with correctness-first scoring."""
+        import time
+
+        start_time = time.time()
+
+        # Extract the answer from output
+        if isinstance(output, dict):
+            answer = output.get('answer', output.get('result', output.get('output', str(output))))
+        elif isinstance(output, str):
+            answer = output
+        else:
+            answer = str(output)
+
+        # Normalize answer for comparison
+        answer_normalized = answer.lower().strip().rstrip('.').replace('$', '').replace(',', '')
+        expected_normalized = (expected or self.get_input()['answer']).lower().strip().rstrip('.').replace('$', '').replace(',', '')
+
+        # Check correctness
+        is_correct = answer_normalized == expected_normalized
+
+        # CORRECTNESS-FIRST: If incorrect, score is 0 regardless of efficiency
+        if not is_correct:
+            return BenchmarkResult(
+                task_id=self.task_id,
+                success=False,
+                score=0.0,
+                execution_time=time.time() - start_time,
+                iterations=0,
+                token_usage=0,
+                cost=0.0,
+                metadata={'answer': answer, 'expected': expected, 'correctness': 'failed'},
+                error=f"Incorrect answer: got '{answer}', expected '{expected}'"
+            )
+
+        # If correct, score based on efficiency (full score for correctness)
+        score = 1.0
+
+        return BenchmarkResult(
+            task_id=self.task_id,
+            success=True,
+            score=score,
+            execution_time=time.time() - start_time,
+            iterations=0,
+            token_usage=0,
+            cost=0.0,
+            metadata={'answer': answer, 'expected': expected, 'correctness': 'passed'},
+            error=None
+        )
 
 
 class LongHorizonPlanningTask(BenchmarkTask):
@@ -128,7 +202,68 @@ class LongHorizonPlanningTask(BenchmarkTask):
         return random.choice(self.scenarios)
 
     def evaluate(self, output: Any) -> BenchmarkResult:
-        pass
+        """Evaluate the planning output with correctness-first scoring."""
+        import time
+
+        start_time = time.time()
+
+        # Extract plan from output
+        if isinstance(output, dict):
+            plan_steps = output.get('steps', output.get('plan', []))
+        elif isinstance(output, list):
+            plan_steps = output
+        else:
+            plan_steps = []
+
+        # Get expected steps
+        scenario = self.get_input()
+        expected_steps = scenario.get('expected_steps', [])
+
+        # Check if all expected steps are present (correctness check)
+        if not plan_steps or not expected_steps:
+            return BenchmarkResult(
+                task_id=self.task_id,
+                success=False,
+                score=0.0,
+                execution_time=time.time() - start_time,
+                iterations=0,
+                token_usage=0,
+                cost=0.0,
+                metadata={'plan_steps': plan_steps, 'expected_steps': expected_steps, 'correctness': 'no_plan'},
+                error="No plan generated"
+            )
+
+        # Check if plan covers all expected steps (case-insensitive substring match)
+        plan_text = ' '.join([str(s).lower() for s in plan_steps])
+        steps_covered = sum(1 for step in expected_steps if step.lower() in plan_text)
+
+        # CORRECTNESS-FIRST: Must cover at least 80% of expected steps
+        coverage = steps_covered / len(expected_steps) if expected_steps else 0
+        if coverage < 0.8:
+            return BenchmarkResult(
+                task_id=self.task_id,
+                success=False,
+                score=0.0,
+                execution_time=time.time() - start_time,
+                iterations=0,
+                token_usage=0,
+                cost=0.0,
+                metadata={'plan_steps': plan_steps, 'coverage': coverage, 'correctness': 'insufficient_coverage'},
+                error=f"Plan coverage insufficient: {coverage:.1%} (need 80%)"
+            )
+
+        # If correct, full score
+        return BenchmarkResult(
+            task_id=self.task_id,
+            success=True,
+            score=1.0,
+            execution_time=time.time() - start_time,
+            iterations=0,
+            token_usage=0,
+            cost=0.0,
+            metadata={'plan_steps': plan_steps, 'coverage': coverage, 'correctness': 'passed'},
+            error=None
+        )
 
 
 class ToolUseRecoveryTask(BenchmarkTask):
@@ -155,7 +290,39 @@ class ToolUseRecoveryTask(BenchmarkTask):
         }
 
     def evaluate(self, output: Any) -> BenchmarkResult:
-        pass
+        """Evaluate tool use with recovery. Correctness-first scoring."""
+        start_time = time.time()
+
+        # Expected answer: sum of primes between 1-100 = 1060
+        expected = 1060
+
+        # Extract answer from output
+        if isinstance(output, dict):
+            answer = output.get('answer', output.get('result', output.get('output')))
+        elif isinstance(output, (int, float)):
+            answer = output
+        else:
+            # Try to extract number from string
+            import re
+            numbers = re.findall(r'\d+', str(output))
+            answer = int(numbers[0]) if numbers else None
+
+        # Check correctness
+        is_correct = answer == expected
+
+        if not is_correct:
+            return _create_result(
+                self.task_id, False, 0.0,
+                {'answer': answer, 'expected': expected, 'correctness': 'failed'},
+                f"Incorrect answer: got {answer}, expected {expected}",
+                start_time
+            )
+
+        return _create_result(
+            self.task_id, True, 1.0,
+            {'answer': answer, 'expected': expected, 'correctness': 'passed'},
+            None, start_time
+        )
 
 
 class SelfCorrectionTask(BenchmarkTask):
@@ -197,7 +364,40 @@ class SelfCorrectionTask(BenchmarkTask):
         return random.choice(self.problems)
 
     def evaluate(self, output: Any) -> BenchmarkResult:
-        pass
+        """Evaluate self-correction task. Correctness-first scoring."""
+        start_time = time.time()
+
+        # Get the problem that was asked
+        problem = self.get_input()
+        expected = problem.get('correct_answer')
+
+        # Extract answer from output
+        if isinstance(output, dict):
+            answer = output.get('answer', output.get('result', output.get('output')))
+        elif isinstance(output, (int, float)):
+            answer = output
+        else:
+            # Try to extract number from string
+            import re
+            numbers = re.findall(r'\d+\.?\d*', str(output))
+            answer = float(numbers[0]) if numbers else None
+
+        # Check correctness
+        is_correct = answer == expected
+
+        if not is_correct:
+            return _create_result(
+                self.task_id, False, 0.0,
+                {'answer': answer, 'expected': expected, 'problem': problem.get('problem'), 'correctness': 'failed'},
+                f"Incorrect answer: got {answer}, expected {expected}",
+                start_time
+            )
+
+        return _create_result(
+            self.task_id, True, 1.0,
+            {'answer': answer, 'expected': expected, 'problem': problem.get('problem'), 'correctness': 'passed'},
+            None, start_time
+        )
 
 
 class BudgetConstrainedTask(BenchmarkTask):
@@ -224,7 +424,38 @@ class BudgetConstrainedTask(BenchmarkTask):
         }
 
     def evaluate(self, output: Any) -> BenchmarkResult:
-        pass
+        """Evaluate budget-constrained task. Correctness-first scoring."""
+        start_time = time.time()
+
+        # Expected: max value is 1000
+        expected = 1000
+
+        # Extract answer from output
+        if isinstance(output, dict):
+            answer = output.get('answer', output.get('result', output.get('output')))
+        elif isinstance(output, (int, float)):
+            answer = output
+        else:
+            import re
+            numbers = re.findall(r'\d+', str(output))
+            answer = int(numbers[0]) if numbers else None
+
+        # Check correctness
+        is_correct = answer == expected
+
+        if not is_correct:
+            return _create_result(
+                self.task_id, False, 0.0,
+                {'answer': answer, 'expected': expected, 'correctness': 'failed'},
+                f"Incorrect answer: got {answer}, expected {expected}",
+                start_time
+            )
+
+        return _create_result(
+            self.task_id, True, 1.0,
+            {'answer': answer, 'expected': expected, 'correctness': 'passed'},
+            None, start_time
+        )
 
 
 class MultiAgentCoordinationTask(BenchmarkTask):
@@ -251,7 +482,31 @@ class MultiAgentCoordinationTask(BenchmarkTask):
         }
 
     def evaluate(self, output: Any) -> BenchmarkResult:
-        pass
+        """Evaluate multi-agent coordination. Checks for consensus achievement."""
+        start_time = time.time()
+
+        # Check if consensus was reached
+        if isinstance(output, dict):
+            consensus_reached = output.get('consensus_reached', output.get('agreement', False))
+            final_answer = output.get('answer', output.get('result', output.get('consensus')))
+        else:
+            consensus_reached = False
+            final_answer = str(output)
+
+        # Must have consensus to be correct
+        if not consensus_reached or not final_answer:
+            return _create_result(
+                self.task_id, False, 0.0,
+                {'consensus_reached': consensus_reached, 'answer': final_answer, 'correctness': 'no_consensus'},
+                "No consensus reached",
+                start_time
+            )
+
+        return _create_result(
+            self.task_id, True, 1.0,
+            {'consensus_reached': consensus_reached, 'answer': final_answer, 'correctness': 'passed'},
+            None, start_time
+        )
 
 
 class MemoryIntensiveTask(BenchmarkTask):
@@ -297,4 +552,37 @@ class MemoryIntensiveTask(BenchmarkTask):
         }
 
     def evaluate(self, output: Any) -> BenchmarkResult:
-        pass
+        """Evaluate self-correction task. Correctness-first scoring."""
+        start_time = time.time()
+
+        # Get the problem that was asked
+        problem = self.get_input()
+        expected = problem.get('correct_answer')
+
+        # Extract answer from output
+        if isinstance(output, dict):
+            answer = output.get('answer', output.get('result', output.get('output')))
+        elif isinstance(output, (int, float)):
+            answer = output
+        else:
+            # Try to extract number from string
+            import re
+            numbers = re.findall(r'\d+\.?\d*', str(output))
+            answer = float(numbers[0]) if numbers else None
+
+        # Check correctness
+        is_correct = answer == expected
+
+        if not is_correct:
+            return _create_result(
+                self.task_id, False, 0.0,
+                {'answer': answer, 'expected': expected, 'problem': problem.get('problem'), 'correctness': 'failed'},
+                f"Incorrect answer: got {answer}, expected {expected}",
+                start_time
+            )
+
+        return _create_result(
+            self.task_id, True, 1.0,
+            {'answer': answer, 'expected': expected, 'problem': problem.get('problem'), 'correctness': 'passed'},
+            None, start_time
+        )

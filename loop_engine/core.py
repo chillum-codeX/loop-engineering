@@ -35,10 +35,123 @@ from .types import (
     RecoveryStrategy,
     Step,
     StepStatus,
+    VerificationResult,
 )
 from .recovery import RecoveryRegistry
 
 logger = logging.getLogger(__name__)
+
+
+class MultiAgentOrchestrator:
+    """
+    Orchestrates multiple agents in multi-agent execution mode.
+
+    Manages agent coordination, message routing, and collective decision-making.
+    """
+
+    def __init__(self, engine: 'LoopEngine'):
+        self.engine = engine
+        self.agents: Dict[str, Any] = {}
+        self.agent_roles: Dict[str, str] = {}
+        self.message_queue: List[AgentMessage] = []
+
+    def register_agent(self, agent_id: str, agent: Any, role: str = "worker") -> None:
+        """Register an agent with the orchestrator."""
+        self.agents[agent_id] = agent
+        self.agent_roles[agent_id] = role
+        logger.debug(f"Registered agent {agent_id} with role {role}")
+
+    async def coordinate_planning(self, context: LoopContext) -> Plan:
+        """Collective planning across multiple agents."""
+        # Aggregate plans from all agents
+        plans = []
+        for agent_id, agent in self.agents.items():
+            if hasattr(agent, 'create_plan'):
+                try:
+                    plan = await agent.create_plan(context.goal, context.initial_context)
+                    plans.append((agent_id, plan))
+                except Exception as e:
+                    logger.warning(f"Agent {agent_id} planning failed: {e}")
+
+        if not plans:
+            # Fallback to single planner if registered
+            planner = self.engine.components.get(ComponentType.PLANNER)
+            if planner:
+                return await planner.create_plan(context.goal, context.initial_context)
+            raise RuntimeError("No agents available for planning")
+
+        # Merge plans or select best (simple: select first for now)
+        # TODO: Implement plan merging/consensus
+        return plans[0][1]
+
+    async def coordinate_action(self, step: Step, context: LoopContext) -> Any:
+        """Execute action with agent coordination."""
+        # Route to appropriate agent based on step metadata
+        agent_id = step.metadata.get('assigned_agent')
+
+        if agent_id and agent_id in self.agents:
+            agent = self.agents[agent_id]
+            if hasattr(agent, 'execute'):
+                return await agent.execute(step, self.engine.state.observations, context)
+
+        # Fallback to primary actor
+        actor = self.engine.components.get(ComponentType.ACTOR)
+        if actor:
+            return await actor.execute(step, self.engine.state.observations, context)
+
+        raise RuntimeError(f"No agent available to execute step {step.id}")
+
+    async def broadcast_message(self, sender: str, content: Any, message_type: str = "info") -> None:
+        """Broadcast a message to all agents."""
+        message = AgentMessage(
+            sender=sender,
+            recipient="",  # Broadcast
+            content=content,
+            message_type=message_type
+        )
+        self.message_queue.append(message)
+        self.engine.state.messages.append(message)
+
+    async def send_message(self, sender: str, recipient: str, content: Any, message_type: str = "info") -> None:
+        """Send a message to a specific agent."""
+        message = AgentMessage(
+            sender=sender,
+            recipient=recipient,
+            content=content,
+            message_type=message_type
+        )
+        self.message_queue.append(message)
+        self.engine.state.messages.append(message)
+
+    async def collect_evaluations(self, plan: Plan, context: LoopContext) -> List[Evaluation]:
+        """Collect evaluations from all agents."""
+        evaluations = []
+        for agent_id, agent in self.agents.items():
+            if hasattr(agent, 'evaluate'):
+                try:
+                    eval_result = await agent.evaluate(
+                        plan,
+                        self.engine.state.observations,
+                        context.goal,
+                        context
+                    )
+                    evaluations.append(eval_result)
+                except Exception as e:
+                    logger.warning(f"Agent {agent_id} evaluation failed: {e}")
+
+        # Fallback to registered evaluator
+        if not evaluations:
+            evaluator = self.engine.components.get(ComponentType.EVALUATOR)
+            if evaluator:
+                eval_result = await evaluator.evaluate(
+                    plan,
+                    self.engine.state.observations,
+                    context.goal,
+                    context
+                )
+                evaluations.append(eval_result)
+
+        return evaluations
 
 
 @dataclass
@@ -153,8 +266,11 @@ class ComponentRegistry:
             ComponentType.ACTOR: ['execute', 'execute_direct'],
             ComponentType.OBSERVER: ['observe'],
             ComponentType.EVALUATOR: ['evaluate'],
+            ComponentType.VERIFIER: ['verify'],
             ComponentType.RECOVERY: ['recover'],
             ComponentType.TERMINATOR: ['should_terminate'],
+            ComponentType.MEMORY: ['read', 'write'],
+            ComponentType.SAFETY: ['check'],
         }
 
     def register(
@@ -248,9 +364,14 @@ class LoopEngine:
         self.config = config or LoopConfig()
         self.components = ComponentRegistry()
         self.recovery_registry = RecoveryRegistry()
+        self.orchestrator: Optional[MultiAgentOrchestrator] = None
         self.state: Optional[LoopState] = None
         self.budget: Optional[Budget] = None
         self._setup_logging()
+
+        # Initialize orchestrator for multi-agent mode
+        if self.config.execution_mode == ExecutionMode.MULTI_AGENT:
+            self.orchestrator = MultiAgentOrchestrator(self)
 
     def _setup_logging(self):
         """Configure logging."""
@@ -515,6 +636,17 @@ class LoopEngine:
         result.recoveries = self.state.recoveries.copy()
         result.evaluations = self.state.evaluations.copy()
 
+        # Calculate overall verification status
+        if self.state.current_plan:
+            verified_steps = [s for s in self.state.current_plan.steps
+                            if s.status == StepStatus.VERIFIED_COMPLETED]
+            if verified_steps and len(verified_steps) == len(self.state.current_plan.steps):
+                result.verification_status = True
+            elif verified_steps:
+                result.verification_status = None  # Partial
+            else:
+                result.verification_status = False  # None verified
+
         if self.budget:
             result.token_usage = self.budget.tokens_used
             result.cost = self.budget.cost_used
@@ -594,6 +726,19 @@ class LoopEngine:
             self._transition_to(ExecutionState.PLANNING)
 
         # 1. PLANNING: Create or revise plan
+        # Safety check before planning
+        if self.config.enable_safety:
+            if not await self._execute_safety_check(context, 'planning'):
+                logger.warning("Safety check failed at planning phase")
+                self._transition_to(ExecutionState.FAILED)
+                return
+
+        # Read memory before planning if enabled
+        if self.config.enable_memory:
+            memories = await self._execute_memory_read(context)
+            if memories and self.config.verbose:
+                logger.debug(f"Loaded {len(memories)} memories for planning")
+
         if self.config.enable_planner:
             if self.state.execution_state in [ExecutionState.INITIALIZED, ExecutionState.ITERATION_COMPLETE]:
                 self._transition_to(ExecutionState.PLANNING)
@@ -607,6 +752,13 @@ class LoopEngine:
                 logger.debug("Planner disabled - using direct execution or fixed plan")
 
         # 2. ACTION: Execute current step
+        # Safety check before acting
+        if self.config.enable_safety:
+            if not await self._execute_safety_check(context, 'acting'):
+                logger.warning("Safety check failed at acting phase")
+                self._transition_to(ExecutionState.FAILED)
+                return
+
         self._transition_to(ExecutionState.ACTING)
         action_result = await self._execute_action(context)
 
@@ -620,6 +772,7 @@ class LoopEngine:
                 logger.debug("Observer disabled - skipping observation")
 
         # 4. EVALUATION: Assess progress (if enabled)
+        evaluation = None
         if self.config.enable_evaluator:
             if self.state.execution_state == ExecutionState.OBSERVING:
                 self._transition_to(ExecutionState.EVALUATING)
@@ -634,13 +787,38 @@ class LoopEngine:
                 await self._execute_recovery(context, evaluation)
                 # After recovery, we'll be in RECOVERING or REPLANNING state
         else:
-            # Evaluator disabled - skip to iteration complete
+            # Evaluator disabled - skip to verification or iteration complete
             if self.config.verbose:
                 logger.debug("Evaluator disabled - skipping evaluation")
 
+        # 6. VERIFICATION: Final verification check (if enabled)
+        verification = None
+        if self.config.enable_verification and self.state.execution_state == ExecutionState.EVALUATING:
+            if evaluation and evaluation.passed:
+                self._transition_to(ExecutionState.VERIFYING)
+                verification = await self._execute_verification(context)
+
+                # Handle verification failure
+                if self.config.enable_recovery and verification and not verification.verified:
+                    await self._execute_recovery(context)
+        elif self.config.enable_verification and self.state.execution_state not in [
+            ExecutionState.RECOVERING, ExecutionState.REPLANNING, ExecutionState.FAILED
+        ]:
+            # If we skipped evaluation but verification is enabled, we still need to verify
+            # This handles the case where observer is disabled but verifier is enabled
+            if self.state.current_step and self.state.current_step.status == StepStatus.EXECUTED:
+                self._transition_to(ExecutionState.VERIFYING)
+                verification = await self._execute_verification(context)
+
+                # Handle verification failure
+                if self.config.enable_recovery and verification and not verification.verified:
+                    await self._execute_recovery(context)
+
         # Transition to ITERATION_COMPLETE at end of iteration
         # Determine the correct path based on current state
-        if self.state.execution_state == ExecutionState.EVALUATING:
+        if self.state.execution_state == ExecutionState.VERIFYING:
+            self._transition_to(ExecutionState.ITERATION_COMPLETE)
+        elif self.state.execution_state == ExecutionState.EVALUATING:
             self._transition_to(ExecutionState.ITERATION_COMPLETE)
         elif self.state.execution_state == ExecutionState.OBSERVING:
             # Evaluator disabled path
@@ -659,8 +837,40 @@ class LoopEngine:
             if self.config.verbose:
                 logger.debug(f"Iteration ending in state {self.state.execution_state.value}")
 
+        # Write memory at end of iteration if enabled
+        if self.config.enable_memory:
+            await self._execute_memory_write(context)
+
     async def _execute_planning(self, context: LoopContext):
         """Execute planning phase."""
+        # Multi-agent mode: use orchestrator
+        if self.config.execution_mode == ExecutionMode.MULTI_AGENT and self.orchestrator:
+            self.state.counters.planner_called += 1
+            try:
+                if not self.state.current_plan:
+                    plan = await self.orchestrator.coordinate_planning(context)
+                    self.state.current_plan = plan
+                    if self.config.verbose:
+                        logger.info(f"Created multi-agent plan with {len(plan.steps)} steps")
+                else:
+                    # Revise plan
+                    planner = self.components.get(ComponentType.PLANNER)
+                    if planner:
+                        plan = await planner.revise_plan(
+                            self.state.current_plan,
+                            self.state.observations,
+                            self.state.evaluations
+                        )
+                        if plan.version != self.state.current_plan.version:
+                            self.state.current_plan = plan
+                            if self.config.verbose:
+                                logger.info(f"Revised plan to version {plan.version}")
+            except Exception as e:
+                logger.error(f"Multi-agent planning failed: {e}")
+                raise
+            return
+
+        # Single-agent mode: use registered planner
         planner = self.components.get(ComponentType.PLANNER)
         if not planner:
             return
@@ -687,6 +897,48 @@ class LoopEngine:
 
     async def _execute_action(self, context: LoopContext) -> Any:
         """Execute action phase with proper step lifecycle."""
+        # Multi-agent mode: use orchestrator
+        if self.config.execution_mode == ExecutionMode.MULTI_AGENT and self.orchestrator:
+            self.state.counters.actor_called += 1
+
+            # Get next step from plan
+            if self.state.current_plan:
+                step = self.state.current_plan.get_next_step()
+                self.state.current_step = step
+            else:
+                step = None
+
+            if step:
+                step.status = StepStatus.IN_PROGRESS
+                step.start_time = time.time()
+
+                try:
+                    result = await self.orchestrator.coordinate_action(step, context)
+                    step.output = result
+                    step.status = StepStatus.EXECUTED
+                    step.end_time = time.time()
+
+                    if self.config.verbose:
+                        logger.info(f"Executed step {step.id}: {step.description[:50]}...")
+
+                except Exception as e:
+                    step.status = StepStatus.FAILED
+                    failure = Failure(
+                        type=FailureType.EXECUTION_ERROR,
+                        message=str(e),
+                        step_id=step.id,
+                        recoverable=True,
+                        max_recovery_attempts=self.config.max_recovery_attempts
+                    )
+                    self.state.failures.append(failure)
+                    return None
+            else:
+                # No steps available
+                result = None
+
+            return result
+
+        # Single-agent mode: use registered actor
         actor = self.components.get(ComponentType.ACTOR)
         if not actor:
             return None
@@ -773,7 +1025,7 @@ class LoopEngine:
             self.state.current_step.evaluation_passed = evaluation.passed
 
             if evaluation.passed:
-                # Evaluator sets EVALUATED (not completed - verification may be needed)
+                # Evaluator sets EVALUATED (verification will set VERIFIED_COMPLETED)
                 self.state.current_step.status = StepStatus.EVALUATED
 
                 # If verification disabled, auto-promote to VERIFIED_COMPLETED
@@ -800,6 +1052,143 @@ class LoopEngine:
             logger.info(f"Evaluation: score={evaluation.score:.2f}, passed={evaluation.passed}")
 
         return evaluation
+
+    async def _execute_verification(self, context: LoopContext) -> Optional[VerificationResult]:
+        """Execute verification phase with proper step lifecycle."""
+        verifier = self.components.get(ComponentType.VERIFIER)
+        if not verifier:
+            return None
+
+        self.state.counters.verifier_called += 1
+
+        verification = await verifier.verify(
+            self.state.current_step,
+            self.state.current_plan,
+            self.state.observations,
+            context
+        )
+
+        # Update current step status based on verification
+        if self.state.current_step and verification:
+            self.state.current_step.verification_passed = verification.verified
+
+            if verification.verified:
+                # Verification passed - step is complete
+                self.state.current_step.status = StepStatus.VERIFIED_COMPLETED
+                if self.config.verbose:
+                    logger.info(f"Step {self.state.current_step.id} verified and completed")
+            else:
+                # Verification failed
+                self.state.current_step.status = StepStatus.VERIFICATION_FAILED
+
+                # Create failure record
+                failure = Failure(
+                    type=FailureType.VERIFICATION_FAILED,
+                    message=f"Verification failed: {verification.issues}",
+                    step_id=self.state.current_step.id,
+                    recoverable=True,
+                    max_recovery_attempts=self.config.max_recovery_attempts
+                )
+                self.state.failures.append(failure)
+
+        if self.config.verbose:
+            logger.info(f"Verification: verified={verification.verified}, confidence={verification.confidence:.2f}")
+
+        return verification
+
+    async def _execute_memory_read(self, context: LoopContext) -> List[Any]:
+        """Execute memory read phase."""
+        memory = self.components.get(ComponentType.MEMORY)
+        if not memory:
+            return []
+
+        self.state.counters.memory_read += 1
+
+        try:
+            memories = await memory.read(
+                query=context.goal,
+                context=context,
+                limit=10
+            )
+            if self.config.verbose:
+                logger.debug(f"Memory read: {len(memories)} entries retrieved")
+            return memories
+        except Exception as e:
+            logger.warning(f"Memory read failed: {e}")
+            return []
+
+    async def _execute_memory_write(self, context: LoopContext) -> bool:
+        """Execute memory write phase."""
+        memory = self.components.get(ComponentType.MEMORY)
+        if not memory:
+            return False
+
+        self.state.counters.memory_write += 1
+
+        try:
+            # Write relevant execution context to memory
+            entry = {
+                'goal': context.goal,
+                'iteration': self.state.current_iteration,
+                'observations': [obs.content for obs in self.state.observations[-3:]],
+                'evaluations': [{'score': e.score, 'passed': e.passed} for e in self.state.evaluations[-3:]],
+            }
+
+            success = await memory.write(
+                content=entry,
+                memory_type="working",
+                context=context
+            )
+            if self.config.verbose:
+                logger.debug(f"Memory write: {'succeeded' if success else 'failed'}")
+            return success
+        except Exception as e:
+            logger.warning(f"Memory write failed: {e}")
+            return False
+
+    async def _execute_safety_check(self, context: LoopContext, phase: str) -> bool:
+        """Execute safety check at a specific phase.
+
+        Args:
+            context: Loop context
+            phase: The phase being checked ('planning', 'acting', 'completion')
+
+        Returns:
+            True if safety check passes, False if blocked
+        """
+        safety = self.components.get(ComponentType.SAFETY)
+        if not safety:
+            return True
+
+        self.state.counters.safety_check_called += 1
+
+        try:
+            check = await safety.check(
+                state=self.state,
+                phase=phase,
+                context=context
+            )
+
+            if self.config.verbose:
+                logger.info(f"Safety check ({phase}): passed={check.passed}, severity={check.severity}")
+
+            if not check.passed:
+                # Create failure record for safety violation
+                failure = Failure(
+                    type=FailureType.GOAL_HIJACKING if phase == 'planning' else FailureType.EXECUTION_ERROR,
+                    message=f"Safety check failed at {phase}: {check.message}",
+                    recoverable=False,  # Safety violations are not recoverable
+                    max_recovery_attempts=self.config.max_recovery_attempts
+                )
+                failure.mark_terminal()
+                self.state.failures.append(failure)
+                return False
+
+            return True
+        except Exception as e:
+            logger.warning(f"Safety check failed with error: {e}")
+            # Fail open - if safety check errors, we allow execution
+            return True
 
     async def _execute_recovery(self, context: LoopContext, evaluation: Optional[Evaluation] = None):
         """

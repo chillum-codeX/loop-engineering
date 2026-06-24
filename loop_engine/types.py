@@ -31,8 +31,11 @@ class ComponentType(Enum):
     ACTOR = "actor"
     OBSERVER = "observer"
     EVALUATOR = "evaluator"
+    VERIFIER = "verifier"
     RECOVERY = "recovery"
     TERMINATOR = "terminator"
+    MEMORY = "memory"
+    SAFETY = "safety"
 
 
 class ExecutionMode(Enum):
@@ -367,6 +370,7 @@ class LoopResult:
     failures: List[Failure] = field(default_factory=list)
     recoveries: List[RecoveryAction] = field(default_factory=list)
     evaluations: List[Evaluation] = field(default_factory=list)
+    verification_status: Optional[bool] = None  # Overall verification result
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
