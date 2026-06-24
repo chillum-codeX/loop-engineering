@@ -32,9 +32,11 @@ from .types import (
     Observation,
     Plan,
     RecoveryAction,
+    RecoveryStrategy,
     Step,
     StepStatus,
 )
+from .recovery import RecoveryRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -245,6 +247,7 @@ class LoopEngine:
     def __init__(self, config: Optional[LoopConfig] = None):
         self.config = config or LoopConfig()
         self.components = ComponentRegistry()
+        self.recovery_registry = RecoveryRegistry()
         self.state: Optional[LoopState] = None
         self.budget: Optional[Budget] = None
         self._setup_logging()
@@ -793,16 +796,12 @@ class LoopEngine:
 
     async def _execute_recovery(self, context: LoopContext, evaluation: Optional[Evaluation] = None):
         """
-        Execute recovery phase with explicit failure lifecycle tracking.
+        Execute recovery phase with real recovery handlers.
 
         The failure lifecycle:
         UNHANDLED -> RECOVERY_PLANNED -> RECOVERY_IN_PROGRESS -> RECOVERED/RECOVERY_FAILED
         """
-        recovery = self.components.get(ComponentType.RECOVERY)
-        if not recovery:
-            return
-
-        # Get recent UNHANDLED failures (using explicit FailureStatus)
+        # Get unhandled failures
         recent_failures = [
             f for f in self.state.failures
             if f.status == FailureStatus.UNHANDLED and f.can_recover()
@@ -822,15 +821,23 @@ class LoopEngine:
         self.state.status = LoopStatus.RECOVERING
 
         try:
-            recovery_action = await recovery.recover(
-                failure,
-                self.state,
-                context
+            # Use recovery registry to execute strategy
+            result = await self.recovery_registry.execute(
+                strategy=RecoveryStrategy.RETRY,  # Default to retry
+                failure=failure,
+                step=self.state.current_step,
+                state=self.state,
+                context=context
             )
 
-            # Link recovery action to failure using failure_id
-            recovery_action.failure_id = failure.failure_id
-            recovery_action.executed = True
+            # Create recovery action record
+            from .types import RecoveryAction
+            recovery_action = RecoveryAction(
+                strategy=RecoveryStrategy.RETRY,
+                failure_id=failure.failure_id,
+                executed=True,
+                success=result.success
+            )
 
             # Record the recovery attempt on the failure
             failure.record_recovery_attempt(recovery_action.action_id)
@@ -838,26 +845,27 @@ class LoopEngine:
             self.state.recoveries.append(recovery_action)
             self.state.counters.recovery_called += 1
 
-            # Check if recovery action succeeded
-            if recovery_action.success:
+            # Handle result
+            if result.success:
                 failure.mark_recovered()
+                if result.new_state:
+                    self._transition_to(result.new_state)
                 if self.config.verbose:
-                    logger.info(f"Recovery succeeded for failure {failure.failure_id}")
+                    logger.info(f"Recovery succeeded for failure {failure.failure_id}: {result.message}")
             else:
                 # Check if max attempts reached
                 if not failure.can_recover():
                     failure.mark_terminal()
+                    self.state.execution_state = ExecutionState.FAILED
                     if self.config.verbose:
                         logger.warning(f"Recovery failed for failure {failure.failure_id}: max attempts reached")
-
-            if self.config.verbose:
-                logger.info(f"Recovery action: {recovery_action.strategy.value} for failure {failure.failure_id}")
 
         except Exception as e:
             logger.error(f"Recovery execution failed: {e}")
             failure.record_recovery_attempt(f"error_{str(uuid.uuid4())[:8]}")
             if not failure.can_recover():
                 failure.mark_terminal()
+                self.state.execution_state = ExecutionState.FAILED
 
     async def _check_termination(self, context: LoopContext) -> bool:
         """Check if loop should terminate."""
