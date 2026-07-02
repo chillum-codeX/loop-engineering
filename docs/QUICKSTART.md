@@ -5,14 +5,18 @@ Get up and running with Loop Engineering in 5 minutes.
 ## Installation
 
 ```bash
-pip install loop-engineering
+git clone https://github.com/chillum-codeX/loop-engineering.git
+cd loop-engineering
+pip install -e .
 ```
 
-Or install with development dependencies:
+Or install the v0.4.1 release wheel directly:
 
 ```bash
-pip install "loop-engineering[dev]"
+pip install https://github.com/chillum-codeX/loop-engineering/releases/download/v0.4.1/loop_engineering-0.4.1-py3-none-any.whl
 ```
+
+The package is not yet published to PyPI.
 
 ## Your First Loop
 
@@ -109,13 +113,13 @@ print(f"Tasks completed: {result.tasks_completed}")
 
 ## Next Steps
 
-- Try different [patterns](../patterns/)
-- Read about [failure modes](failure-modes.md)
-- Learn [anti-patterns](anti-patterns.md) to avoid
-- Explore the [API reference](api-reference.md)
+- Try the [starter patterns](patterns/daily-triage.md)
+- Read the [state machine specification](STATE_MACHINE_SPECIFICATION.md)
+- Review the [step lifecycle specification](STEP_LIFECYCLE_SPECIFICATION.md)
+- Understand the [recovery model](RECOVERY_EXECUTION_SPECIFICATION.md)
 
 ## Getting Help
 
 - [GitHub Discussions](https://github.com/chillum-codeX/loop-engineering/discussions)
-- [Documentation](../README.md)
+- [Documentation home](index.md)
 - [Issues](https://github.com/chillum-codeX/loop-engineering/issues)

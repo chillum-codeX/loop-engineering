@@ -38,4 +38,4 @@ Run `loop-engine cost --pattern ci-sweeper` for estimates.
 
 ## See Also
 
-- [Pattern Index](../README.md)
+- [Documentation home](../index.md)

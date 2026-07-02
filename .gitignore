@@ -6,6 +6,7 @@ coverage.xml
 htmlcov/
 build/
 dist/
+site/
 *.egg-info/
 
 .claude/

@@ -38,4 +38,4 @@ Run `loop-engine cost --pattern pr-babysitter` for estimates.
 
 ## See Also
 
-- [Pattern Index](../README.md)
+- [Documentation home](../index.md)

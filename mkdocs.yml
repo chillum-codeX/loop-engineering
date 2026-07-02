@@ -1,0 +1,34 @@
+site_name: Loop Engineering
+site_description: An alpha Python runtime for budgeted, verifiable agent loops.
+site_url: https://chillum-codex.github.io/loop-engineering/
+repo_url: https://github.com/chillum-codeX/loop-engineering
+repo_name: chillum-codeX/loop-engineering
+
+theme:
+  name: mkdocs
+
+nav:
+  - Home: index.md
+  - Quickstart: QUICKSTART.md
+  - Tool selection: tool-comparison.md
+  - Patterns:
+      - Daily triage: patterns/daily-triage.md
+      - PR babysitter: patterns/pr-babysitter.md
+      - CI sweeper: patterns/ci-sweeper.md
+      - Dependency sweeper: patterns/dependency-sweeper.md
+      - Changelog drafter: patterns/changelog-drafter.md
+      - Post-merge cleanup: patterns/post-merge-cleanup.md
+      - Issue triage: patterns/issue-triage.md
+  - Runtime specifications:
+      - State machine: STATE_MACHINE_SPECIFICATION.md
+      - Step lifecycle: STEP_LIFECYCLE_SPECIFICATION.md
+      - Recovery execution: RECOVERY_EXECUTION_SPECIFICATION.md
+  - Validation history: FINAL_VALIDATION_REPORT.md
+
+markdown_extensions:
+  - tables
+  - fenced_code
+  - toc:
+      permalink: true
+
+strict: true

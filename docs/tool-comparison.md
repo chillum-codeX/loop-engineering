@@ -52,6 +52,6 @@ usage and cost when the API supplies it.
 ## See also
 
 - [Quickstart](QUICKSTART.md)
-- [Failure modes](failure-modes.md)
-- [Anti-patterns](anti-patterns.md)
-- [Starter patterns](patterns/)
+- [State machine specification](STATE_MACHINE_SPECIFICATION.md)
+- [Recovery execution](RECOVERY_EXECUTION_SPECIFICATION.md)
+- [Starter patterns](patterns/daily-triage.md)

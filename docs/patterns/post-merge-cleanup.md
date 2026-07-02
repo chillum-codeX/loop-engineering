@@ -38,4 +38,4 @@ Run `loop-engine cost --pattern post-merge-cleanup` for estimates.
 
 ## See Also
 
-- [Pattern Index](../README.md)
+- [Documentation home](../index.md)
