@@ -213,7 +213,7 @@ class SkillLoader:
         if not self.skills_dir.exists():
             return {}
 
-        for skill_dir in self.skills_dir.iterdir():
+        for skill_dir in sorted(self.skills_dir.iterdir()):
             if skill_dir.is_dir():
                 skill_file = skill_dir / "SKILL.md"
                 if skill_file.exists():
@@ -222,6 +222,12 @@ class SkillLoader:
                         self._skills[skill.name] = skill
                     except Exception as e:
                         print(f"Warning: Failed to load skill from {skill_file}: {e}")
+            elif skill_dir.suffix.lower() == ".md":
+                try:
+                    skill = SkillParser.parse_file(skill_dir)
+                    self._skills[skill.name] = skill
+                except Exception as e:
+                    print(f"Warning: Failed to load skill from {skill_dir}: {e}")
 
         self._loaded = True
         return self._skills

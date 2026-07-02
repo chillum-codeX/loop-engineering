@@ -59,11 +59,9 @@ class BudgetConstrainedTask(BenchmarkTask):
         step_efficiency = max(0, 1.0 - (steps_used / self.max_steps))
         token_efficiency = max(0, 1.0 - (tokens_used / self.max_tokens)) if self.max_tokens > 0 else 0
 
-        # Combined score: correctness weighted heavily, efficiency bonus
-        correctness_score = 1.0 if correct else 0.0
-        efficiency_bonus = (step_efficiency * 0.1 + token_efficiency * 0.1)
-
-        score = correctness_score * 0.8 + efficiency_bonus
+        # Correctness-first: efficiency can only improve a correct result.
+        efficiency_bonus = step_efficiency * 0.1 + token_efficiency * 0.1
+        score = (0.8 + efficiency_bonus) if correct else 0.0
 
         # Success if correct, regardless of efficiency
         success = correct

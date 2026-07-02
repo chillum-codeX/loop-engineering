@@ -57,7 +57,7 @@ class LongHorizonPlanningTask(BenchmarkTask):
         element_score = elements_found / len(key_elements)
 
         # Check for reasonable number of steps
-        plan_steps = metadata.get("plan_steps", 0)
+        plan_steps = metadata.get("plan_steps", 0) if output_str.strip() else 0
         if plan_steps == 0:
             # Try to count steps from output
             step_indicators = ["step", "1.", "2.", "3.", "- ", "* "]
@@ -66,7 +66,7 @@ class LongHorizonPlanningTask(BenchmarkTask):
         step_score = min(1.0, plan_steps / scenario["expected_steps"]) if scenario["expected_steps"] > 0 else 0.5
 
         # Combined score
-        score = (element_score * 0.7 + step_score * 0.3)
+        score = (element_score * 0.7 + step_score * 0.3) if output_str.strip() else 0.0
         success = score >= 0.5
 
         return BenchmarkResult(

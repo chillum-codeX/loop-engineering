@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  loop-engine:
+    build: .
+    volumes:
+      - ./:/app/workdir
+      - loop-state:/app/.loop/state
+    working_dir: /app/workdir
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    command: run
+
+volumes:
+  loop-state:

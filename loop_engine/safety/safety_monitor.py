@@ -11,7 +11,10 @@ Security and safety components including:
 from __future__ import annotations
 
 import asyncio
+import ast
+import json
 import logging
+import sys
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -90,9 +93,11 @@ class SafetyMonitor:
 
 class Sandbox:
     """
-    Sandboxed execution environment.
+    Restricted execution worker.
 
-    Provides isolation for potentially dangerous operations.
+    Code is validated before launch and runs in a separate, killable Python
+    process. This is defense in depth, not a replacement for an OS sandbox
+    such as a locked-down container or gVisor.
     """
 
     def __init__(
@@ -122,46 +127,91 @@ class Sandbox:
         Returns:
             Execution result
         """
-        # Check for blocked functions
-        for func in self.blocked_functions:
-            if func in code:
-                raise SecurityError(f"Blocked function detected: {func}")
-
-        # Create restricted globals
-        safe_globals = {
-            "__builtins__": {
-                "len": len, "range": range, "enumerate": enumerate,
-                "zip": zip, "map": map, "filter": filter,
-                "sum": sum, "min": min, "max": max, "abs": abs,
-                "round": round, "pow": pow, "divmod": divmod,
-                "str": str, "int": int, "float": float, "bool": bool,
-                "list": list, "dict": dict, "set": set, "tuple": tuple,
-                "print": self._safe_print, "Exception": Exception
-            }
-        }
-
-        if context:
-            safe_globals.update(context)
+        self._validate_code(code)
+        try:
+            payload = json.dumps({
+                "code": code,
+                "context": context or {},
+                "allowed_modules": sorted(self.allowed_modules),
+                "max_memory_mb": self.max_memory_mb,
+            })
+        except (TypeError, ValueError) as exc:
+            raise SecurityError("Sandbox context must be JSON-serializable") from exc
 
         start_time = time.time()
-
+        worker = r"""
+import contextlib, io, json, sys
+payload = json.loads(sys.stdin.read())
+try:
+    import resource
+    limit = int(payload["max_memory_mb"]) * 1024 * 1024
+    resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
+except (ImportError, AttributeError, OSError, ValueError):
+    pass
+allowed = set(payload["allowed_modules"])
+def safe_import(name, globals=None, locals=None, fromlist=(), level=0):
+    root = name.split(".", 1)[0]
+    if root not in allowed:
+        raise ImportError("module is not allowed: " + root)
+    return __import__(name, globals, locals, fromlist, level)
+safe_builtins = {
+    "len": len, "range": range, "enumerate": enumerate, "zip": zip,
+    "map": map, "filter": filter, "sum": sum, "min": min, "max": max,
+    "abs": abs, "round": round, "pow": pow, "divmod": divmod,
+    "str": str, "int": int, "float": float, "bool": bool,
+    "list": list, "dict": dict, "set": set, "tuple": tuple,
+    "print": print, "Exception": Exception, "__import__": safe_import,
+}
+scope = {"__builtins__": safe_builtins, **payload["context"]}
+output = io.StringIO()
+try:
+    with contextlib.redirect_stdout(output):
+        exec(compile(payload["code"], "<isolated-worker>", "exec"), scope, scope)
+    value = scope.get("result")
+    try:
+        json.dumps(value)
+    except TypeError:
+        value = repr(value)
+    print(json.dumps({"ok": True, "result": value, "stdout": output.getvalue()}))
+except BaseException as exc:
+    print(json.dumps({"ok": False, "error": type(exc).__name__ + ": " + str(exc), "stdout": output.getvalue()}))
+"""
+        process = await asyncio.create_subprocess_exec(
+            sys.executable,
+            "-I",
+            "-c",
+            worker,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
         try:
-            # Execute with timeout
-            result = await asyncio.wait_for(
-                self._run_in_executor(code, safe_globals),
-                timeout=self.max_cpu_time
+            stdout, stderr = await asyncio.wait_for(
+                process.communicate(payload.encode("utf-8")),
+                timeout=self.max_cpu_time,
             )
-
+            if process.returncode != 0:
+                raise SecurityError(
+                    f"Isolated worker failed: {stderr.decode('utf-8', errors='replace')[:500]}"
+                )
+            response = json.loads(stdout.decode("utf-8"))
+            if not response.get("ok"):
+                raise SecurityError(response.get("error", "Isolated execution failed"))
+            captured = response.get("stdout", "")
+            if captured:
+                logger.info("[Sandbox Output] %s", captured.rstrip())
             execution_time = time.time() - start_time
             self.execution_log.append({
                 "code": code[:100],
                 "success": True,
-                "execution_time": execution_time
+                "execution_time": execution_time,
+                "stdout": captured[:1000],
             })
-
-            return result
+            return response.get("result")
 
         except asyncio.TimeoutError:
+            process.kill()
+            await process.wait()
             self.execution_log.append({
                 "code": code[:100],
                 "success": False,
@@ -177,15 +227,23 @@ class Sandbox:
             })
             raise
 
-    async def _run_in_executor(self, code: str, globals_dict: Dict):
-        """Run code in executor."""
-        loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, lambda: exec(code, globals_dict))
-
-    def _safe_print(self, *args, **kwargs):
-        """Safe print function that logs instead."""
-        output = " ".join(str(arg) for arg in args)
-        logger.info(f"[Sandbox Output] {output}")
+    def _validate_code(self, code: str) -> None:
+        try:
+            tree = ast.parse(code)
+        except SyntaxError as exc:
+            raise SecurityError(f"Invalid Python syntax: {exc.msg}") from exc
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                modules = [
+                    alias.name.split(".", 1)[0]
+                    for alias in node.names
+                ] if isinstance(node, ast.Import) else [(node.module or "").split(".", 1)[0]]
+                if any(module not in self.allowed_modules for module in modules):
+                    raise SecurityError(f"Import is not allowed: {', '.join(modules)}")
+            if isinstance(node, ast.Name) and node.id in self.blocked_functions:
+                raise SecurityError(f"Blocked function detected: {node.id}")
+            if isinstance(node, ast.Attribute) and node.attr.startswith("__"):
+                raise SecurityError("Dunder attribute access is not allowed")
 
     def get_execution_log(self) -> List[Dict]:
         """Get execution log."""

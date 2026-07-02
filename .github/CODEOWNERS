@@ -1,0 +1,17 @@
+# Global owners
+* @anthropics/loop-engineering-team
+
+# Documentation
+/docs/ @docs-team
+*.md @docs-team
+
+# CLI
+/loop_engine/cli/ @cli-team
+
+# Patterns
+/docs/patterns/ @patterns-team
+/starters/ @patterns-team
+
+# Core runtime
+/loop_engine/core.py @runtime-team
+/loop_engine/runtime_*.py @runtime-team

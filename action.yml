@@ -1,0 +1,71 @@
+name: 'Loop Engineering'
+description: 'Run Loop Engineering patterns in GitHub Actions'
+author: 'Anthropic'
+branding:
+  icon: 'refresh-cw'
+  color: 'blue'
+
+inputs:
+  pattern:
+    description: 'Pattern to run'
+    required: true
+    default: 'daily-triage'
+
+  config:
+    description: 'Path to loop.yaml'
+    required: false
+    default: './loop.yaml'
+
+  api-key:
+    description: 'API key (Anthropic or OpenAI)'
+    required: true
+
+  model:
+    description: 'Model to use'
+    required: false
+    default: 'claude-3-sonnet-20240229'
+
+  dry-run:
+    description: 'Run in dry-run mode'
+    required: false
+    default: 'false'
+
+outputs:
+  status:
+    description: 'Loop execution status'
+
+  tasks-completed:
+    description: 'Number of tasks completed'
+
+  cost:
+    description: 'Total cost of the run'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Loop Engineering
+      shell: bash
+      run: |
+        pip install loop-engineering
+
+    - name: Validate configuration
+      shell: bash
+      run: |
+        loop-engine validate
+
+    - name: Run loop
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.api-key }}
+        OPENAI_API_KEY: ${{ inputs.api-key }}
+      run: |
+        if [ "${{ inputs.dry-run }}" == "true" ]; then
+          loop-engine run --config ${{ inputs.config }} --dry-run
+        else
+          loop-engine run --config ${{ inputs.config }}
+        fi

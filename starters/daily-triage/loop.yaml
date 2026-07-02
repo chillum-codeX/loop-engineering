@@ -1,0 +1,64 @@
+# Loop Engineering Configuration
+# Pattern: daily-triage
+# Generated: 2026-01-01
+
+name: daily-triage-example
+pattern: daily-triage
+tool: claude
+version: "0.4.0"
+
+# Runtime configuration
+runtime:
+  max_iterations: 5
+  checkpoint_preset: production
+
+# Budget limits
+budget:
+  max_tokens: 10000
+  max_cost: 1.00
+  max_steps: 10
+
+# Discovery phase
+discovery:
+  skills_dir: .loop/skills
+  load_latest_on_start: true
+
+# Handoff phase
+handoff:
+  worktrees_dir: .loop/worktrees
+  auto_cleanup: true
+
+# Verification phase
+verification:
+  enable_pre_gates: true
+  enable_post_gates: true
+  mandatory_gates:
+    - syntax
+    - security
+
+# Persistence phase
+persistence:
+  state_dir: .loop/state
+  format: json
+  auto_save: true
+
+# Scheduling phase
+scheduling:
+  exit_on_no_tasks: true
+  exit_on_budget_exhausted: true
+
+# External integrations are disabled until explicitly configured.
+integrations:
+  github:
+    enabled: false
+    repository: owner/repo
+    report_path: .loop/state/daily-triage-report.json
+
+# Pattern-specific configuration
+pattern_config:
+  github_repo: owner/repo
+  slack_channel: "#daily-updates"
+  priority_labels:
+    - P0
+    - P1
+    - P2

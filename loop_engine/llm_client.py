@@ -14,7 +14,8 @@ import os
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, AsyncIterator, Dict, List, Optional
+from math import ceil
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +31,59 @@ class LLMResponse:
     raw_response: Optional[Dict] = None
 
 
+@dataclass(frozen=True)
+class UsageRecord:
+    """Provider-neutral usage emitted after every successful model call."""
+    provider: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+    cost: float = 0.0
+    estimated: bool = False
+
+    @property
+    def total_tokens(self) -> int:
+        return self.input_tokens + self.output_tokens
+
+
+@dataclass(frozen=True)
+class TokenPricing:
+    """Explicit model pricing in USD per one million tokens."""
+    input_per_million: float
+    output_per_million: float
+
+    def cost(self, input_tokens: int, output_tokens: int) -> float:
+        return (
+            input_tokens * self.input_per_million
+            + output_tokens * self.output_per_million
+        ) / 1_000_000
+
+
 class LLMClient(ABC):
     """Abstract base class for LLM clients."""
+
+    def __init__(self) -> None:
+        self.usage_records: List[UsageRecord] = []
+        self._usage_callback: Optional[Callable[[UsageRecord], None]] = None
+
+    def set_usage_callback(
+        self,
+        callback: Optional[Callable[[UsageRecord], None]],
+    ) -> None:
+        self._usage_callback = callback
+
+    def _record_usage(self, record: UsageRecord) -> None:
+        self.usage_records.append(record)
+        if self._usage_callback:
+            self._usage_callback(record)
+
+    @property
+    def total_tokens(self) -> int:
+        return sum(record.total_tokens for record in self.usage_records)
+
+    @property
+    def total_cost(self) -> float:
+        return sum(record.cost for record in self.usage_records)
 
     @abstractmethod
     async def generate(
@@ -65,6 +117,7 @@ class MockLLMClient(LLMClient):
     """
 
     def __init__(self, seed: int = 42):
+        super().__init__()
         self.seed = seed
         self.call_count = 0
         self.token_estimate_per_call = 100
@@ -85,7 +138,7 @@ class MockLLMClient(LLMClient):
 
         # Pattern-based responses
         if "plan" in prompt.lower():
-            return json.dumps({
+            text = json.dumps({
                 "steps": [
                     {"description": "Analyze the problem", "dependencies": []},
                     {"description": "Break down into subtasks", "dependencies": [0]},
@@ -95,7 +148,7 @@ class MockLLMClient(LLMClient):
             })
 
         elif "verify" in prompt.lower() or "evaluate" in prompt.lower():
-            return json.dumps({
+            text = json.dumps({
                 "score": 0.85,
                 "complete": True,
                 "feedback": "Task completed successfully"
@@ -107,11 +160,23 @@ class MockLLMClient(LLMClient):
             numbers = [int(n) for n in re.findall(r'\d+', prompt)]
             if numbers:
                 result = sum(numbers)
-                return json.dumps({"result": result})
-            return json.dumps({"result": 42})
+                text = json.dumps({"result": result})
+            else:
+                text = json.dumps({"result": 42})
 
         else:
-            return f"Mock response {self.call_count}: Acknowledged task."
+            text = f"Mock response {self.call_count}: Acknowledged task."
+
+        self._record_usage(
+            UsageRecord(
+                provider="mock",
+                model=model or "mock-deterministic",
+                input_tokens=ceil(len(prompt) / 4),
+                output_tokens=ceil(len(text) / 4),
+                estimated=True,
+            )
+        )
+        return text
 
     async def generate_structured(
         self,
@@ -144,7 +209,13 @@ class MockLLMClient(LLMClient):
 class AnthropicClient(LLMClient):
     """Anthropic Claude client."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        pricing: Optional[TokenPricing] = None,
+    ):
+        super().__init__()
+        self.pricing = pricing
         self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         if not self.api_key:
             raise ValueError("Anthropic API key required")
@@ -180,6 +251,19 @@ class AnthropicClient(LLMClient):
 
             latency = time.time() - start_time
             text = response.content[0].text if response.content else ""
+            usage = getattr(response, "usage", None)
+            input_tokens = int(getattr(usage, "input_tokens", 0))
+            output_tokens = int(getattr(usage, "output_tokens", 0))
+            self._record_usage(
+                UsageRecord(
+                    provider="anthropic",
+                    model=model,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    cost=self.pricing.cost(input_tokens, output_tokens)
+                    if self.pricing else 0.0,
+                )
+            )
 
             logger.debug(f"Claude response: {len(text)} chars in {latency:.2f}s")
             return text
@@ -225,7 +309,15 @@ Respond with ONLY the JSON object, no other text.
 class OpenAIClient(LLMClient):
     """OpenAI GPT client."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        pricing: Optional[TokenPricing] = None,
+    ):
+        super().__init__()
+        self.pricing = pricing
+        self.provider_name = "openai"
+        self.default_model = "gpt-3.5-turbo"
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError("OpenAI API key required")
@@ -245,7 +337,7 @@ class OpenAIClient(LLMClient):
         **kwargs
     ) -> str:
         """Generate with GPT."""
-        model = model or "gpt-3.5-turbo"
+        model = model or self.default_model
         max_tokens = max_tokens or 1000
 
         start_time = time.time()
@@ -261,12 +353,26 @@ class OpenAIClient(LLMClient):
 
             latency = time.time() - start_time
             text = response.choices[0].message.content or ""
+            usage = getattr(response, "usage", None)
+            input_tokens = int(getattr(usage, "prompt_tokens", 0))
+            output_tokens = int(getattr(usage, "completion_tokens", 0))
+            reported_cost = float(getattr(usage, "cost", 0.0) or 0.0)
+            self._record_usage(
+                UsageRecord(
+                    provider=self.provider_name,
+                    model=model,
+                    input_tokens=input_tokens,
+                    output_tokens=output_tokens,
+                    cost=self.pricing.cost(input_tokens, output_tokens)
+                    if self.pricing else reported_cost,
+                )
+            )
 
             logger.debug(f"GPT response: {len(text)} chars in {latency:.2f}s")
             return text
 
         except Exception as e:
-            logger.error(f"GPT generation failed: {e}")
+            logger.error("%s generation failed: %s", self.provider_name, e)
             raise
 
     async def generate_structured(
@@ -276,23 +382,122 @@ class OpenAIClient(LLMClient):
         model: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
-        """Generate structured output using function calling or JSON mode."""
-        model = model or "gpt-3.5-turbo"
-
-        try:
-            response = await self.client.chat.completions.create(
+        """Generate structured output using JSON mode."""
+        model = model or self.default_model
+        response = await self.client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+            **kwargs
+        )
+        text = response.choices[0].message.content or ""
+        usage = getattr(response, "usage", None)
+        input_tokens = int(getattr(usage, "prompt_tokens", 0))
+        output_tokens = int(getattr(usage, "completion_tokens", 0))
+        reported_cost = float(getattr(usage, "cost", 0.0) or 0.0)
+        self._record_usage(
+            UsageRecord(
+                provider=self.provider_name,
                 model=model,
-                messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
-                **kwargs
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                cost=self.pricing.cost(input_tokens, output_tokens)
+                if self.pricing else reported_cost,
             )
+        )
+        return json.loads(text)
 
-            text = response.choices[0].message.content or ""
-            return json.loads(text)
 
-        except Exception as e:
-            logger.error(f"Structured generation failed: {e}")
-            raise
+class OpenRouterClient(OpenAIClient):
+    """OpenRouter adapter using its OpenAI-compatible chat API."""
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        *,
+        model: Optional[str] = None,
+        pricing: Optional[TokenPricing] = None,
+        app_name: str = "Loop Engineering",
+        app_url: Optional[str] = None,
+    ):
+        LLMClient.__init__(self)
+        self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY")
+        if not self.api_key:
+            raise ValueError("OpenRouter API key required")
+        self.default_model = model or os.environ.get("OPENROUTER_MODEL")
+        if not self.default_model:
+            raise ValueError(
+                "OpenRouter model required via model= or OPENROUTER_MODEL"
+            )
+        self.pricing = pricing
+        self.provider_name = "openrouter"
+        try:
+            from openai import AsyncOpenAI
+        except ImportError as exc:
+            raise ImportError(
+                "openai package required for OpenRouter. Install with: pip install openai"
+            ) from exc
+        headers = {"X-Title": app_name}
+        if app_url:
+            headers["HTTP-Referer"] = app_url
+        self.client = AsyncOpenAI(
+            api_key=self.api_key,
+            base_url="https://openrouter.ai/api/v1",
+            default_headers=headers,
+        )
+
+
+class ScriptedLLMClient(LLMClient):
+    """Deterministic provider for reproducible scenarios and benchmarks."""
+
+    def __init__(
+        self,
+        responses: List[str],
+        *,
+        input_tokens_per_call: int = 10,
+        output_tokens_per_call: int = 10,
+        cost_per_call: float = 0.0,
+    ):
+        super().__init__()
+        if not responses:
+            raise ValueError("ScriptedLLMClient requires at least one response")
+        self.responses = list(responses)
+        self.input_tokens_per_call = input_tokens_per_call
+        self.output_tokens_per_call = output_tokens_per_call
+        self.cost_per_call = cost_per_call
+        self.call_count = 0
+
+    async def generate(
+        self,
+        prompt: str,
+        model: Optional[str] = None,
+        temperature: float = 0.0,
+        max_tokens: Optional[int] = None,
+        **kwargs,
+    ) -> str:
+        if self.call_count >= len(self.responses):
+            raise RuntimeError("Scripted response sequence exhausted")
+        text = self.responses[self.call_count]
+        self.call_count += 1
+        self._record_usage(
+            UsageRecord(
+                provider="scripted",
+                model=model or "scripted",
+                input_tokens=self.input_tokens_per_call,
+                output_tokens=self.output_tokens_per_call,
+                cost=self.cost_per_call,
+            )
+        )
+        return text
+
+    async def generate_structured(
+        self,
+        prompt: str,
+        schema: Dict[str, Any],
+        model: Optional[str] = None,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        return json.loads(await self.generate(prompt, model=model, **kwargs))
 
 
 def create_llm_client(
@@ -313,9 +518,13 @@ def create_llm_client(
     """
     if provider == "mock":
         return MockLLMClient(**kwargs)
+    elif provider == "scripted":
+        return ScriptedLLMClient(**kwargs)
     elif provider == "anthropic":
-        return AnthropicClient(api_key=api_key)
+        return AnthropicClient(api_key=api_key, **kwargs)
     elif provider == "openai":
-        return OpenAIClient(api_key=api_key)
+        return OpenAIClient(api_key=api_key, **kwargs)
+    elif provider == "openrouter":
+        return OpenRouterClient(api_key=api_key, **kwargs)
     else:
         raise ValueError(f"Unknown provider: {provider}")

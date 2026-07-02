@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-07-02T04:51:26.148107+00:00",
+  "provider": "openrouter",
+  "model": "anthropic/claude-sonnet-4",
+  "passed": true,
+  "input_tokens": 23,
+  "output_tokens": 12,
+  "total_tokens": 35,
+  "reported_cost_usd": 0.000249,
+  "response_sha256": "ccb5d43685593ff6afbd6fda7930c9d770cc30ea1f2176a3ddacb18c3bb076d7",
+  "response_stored": false,
+  "max_output_tokens": 32
+}

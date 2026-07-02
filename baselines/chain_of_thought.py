@@ -40,6 +40,8 @@ Think through this step by step. Show your reasoning process clearly.
             prompt += f"\n\nConstraints: {task_input['constraints']}"
 
         try:
+            start_tokens = self.llm.total_tokens
+            start_cost = self.llm.total_cost
             response = await self.llm.generate(prompt, model=self.model)
             execution_time = time.time() - start_time
 
@@ -47,7 +49,8 @@ Think through this step by step. Show your reasoning process clearly.
                 "output": response,
                 "execution_time": execution_time,
                 "iterations": 1,
-                "token_usage": len(prompt) + len(response),  # Approximation
+                "token_usage": self.llm.total_tokens - start_tokens,
+                "cost": self.llm.total_cost - start_cost,
                 "success": True
             }
         except Exception as e:

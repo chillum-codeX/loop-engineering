@@ -468,6 +468,16 @@ class LoopEngine:
             ValueError: If component doesn't implement required interface
         """
         self.components.register(component_type, component, allow_replace)
+        llm = getattr(component, "llm", None)
+        if llm is not None and hasattr(llm, "set_usage_callback"):
+            llm.set_usage_callback(self._consume_llm_usage)
+
+    def _consume_llm_usage(self, usage: Any) -> None:
+        """Apply provider-reported usage to the active loop budget."""
+        if self.budget is None:
+            return
+        self.budget.tokens_used += int(getattr(usage, "total_tokens", 0))
+        self.budget.cost_used += float(getattr(usage, "cost", 0.0))
 
     def get_component(self, component_type: ComponentType) -> Optional[Any]:
         """Get a registered component."""
@@ -589,12 +599,17 @@ class LoopEngine:
                 logger.info("Unhandled failures with recovery disabled")
                 return ExecutionState.FAILED
 
-        # 5. Check if plan is complete
+        # 5. Honor the configured terminator component.
+        if self.config.enable_terminator and await self._check_termination(context):
+            logger.info("Terminator accepted the completion condition")
+            return ExecutionState.COMPLETED
+
+        # 6. Check if plan is complete
         if self.state.current_plan and self._is_plan_complete():
             logger.info("Plan complete - all steps verified")
             return ExecutionState.COMPLETED
 
-        # 6. Continue to next iteration
+        # 7. Continue to next iteration
         return ExecutionState.PLANNING
 
     def _is_plan_complete(self) -> bool:
@@ -761,6 +776,19 @@ class LoopEngine:
 
         self._transition_to(ExecutionState.ACTING)
         action_result = await self._execute_action(context)
+
+        # Do not evaluate a failed action. Recovery must operate on the
+        # original failure evidence instead of creating duplicate failures.
+        if self.state.current_step and self.state.current_step.status == StepStatus.FAILED:
+            if self.config.enable_recovery:
+                await self._execute_recovery(context)
+            if self.state.execution_state == ExecutionState.ACTING:
+                self._transition_to(ExecutionState.ITERATION_COMPLETE)
+            elif self.state.execution_state == ExecutionState.RECOVERING:
+                self._transition_to(ExecutionState.ITERATION_COMPLETE)
+            if self.config.enable_memory:
+                await self._execute_memory_write(context)
+            return
 
         # 3. OBSERVATION: Capture results (if enabled)
         if self.config.enable_observer:

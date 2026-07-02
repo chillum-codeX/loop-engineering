@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "loop-engineering"
-version = "0.3.0"
-description = "A framework for building iterative AI systems with explicit state management"
+version = "0.4.0"
+description = "Loop Engineering - Design systems that prompt your agents. A research-grade Python runtime for autonomous AI agents."
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Loop Engineering Team"}
 ]
@@ -16,7 +16,6 @@ keywords = ["ai", "llm", "agents", "iteration", "recovery", "state-machine"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -32,13 +31,18 @@ dependencies = [
     "requests>=2.31.0",
     "tenacity>=8.2.0",
     "openai>=1.0.0",
+    "click>=8.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
 ]
+
+[project.scripts]
+loop-engine = "loop_engine.cli.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]

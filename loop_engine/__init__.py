@@ -48,6 +48,60 @@ from .persistence import (
     PersistenceConfig,
 )
 
+# Loop Runtime V1: Real State Persistence (JSON/SQLite with restart)
+from .runtime_persistence import (
+    RuntimePersistenceConfig,
+    RuntimeStatePersistence,
+)
+from .runtime_v1 import LoopRuntime, create_runtime
+from .llm_client import (
+    LLMClient,
+    UsageRecord,
+    TokenPricing,
+    OpenRouterClient,
+    ScriptedLLMClient,
+    create_llm_client,
+)
+
+# Loop Runtime V1: Runtime Contracts
+from .runtime_contracts import (
+    # Phase enums
+    RuntimePhase,
+    DiscoveryStatus,
+    HandoffStatus,
+    VerificationStatus,
+    PersistenceStatus,
+    SchedulingStatus,
+    # Task types
+    TaskStatus,
+    TaskPriority,
+    TaskRecord,
+    TaskLedger,
+    # Budget types
+    BudgetReservationStatus,
+    BudgetReservation,
+    # Verification types
+    VerificationVerdict,
+    GateOutcomeData,
+    VerificationOutcome,
+    # Config types
+    DiscoveryConfig,
+    HandoffConfig,
+    VerificationConfig,
+    PersistenceConfig as RuntimePersistenceConfigContract,
+    SchedulingConfig,
+    RuntimeConfig,
+    # State types
+    PhaseState,
+    RuntimeState,
+    # Event types
+    EventType,
+    RuntimeEvent,
+    # Result types
+    PhaseResult,
+    RuntimeResult,
+)
+
 # Anthropic Loop Engineering: Deterministic Gates (Stripe Minions pattern)
 from .gates import (
     DeterministicGate,
@@ -117,6 +171,46 @@ __all__ = [
     # State Persistence
     "LoopStatePersistence",
     "PersistenceConfig",
+
+    # Runtime V1 State Persistence
+    "RuntimePersistenceConfig",
+    "RuntimeStatePersistence",
+    "LoopRuntime",
+    "create_runtime",
+    "LLMClient",
+    "UsageRecord",
+    "TokenPricing",
+    "OpenRouterClient",
+    "ScriptedLLMClient",
+    "create_llm_client",
+
+    # Runtime V1 Contracts
+    "RuntimePhase",
+    "DiscoveryStatus",
+    "HandoffStatus",
+    "VerificationStatus",
+    "PersistenceStatus",
+    "SchedulingStatus",
+    "TaskStatus",
+    "TaskPriority",
+    "TaskRecord",
+    "TaskLedger",
+    "BudgetReservationStatus",
+    "BudgetReservation",
+    "VerificationVerdict",
+    "GateOutcomeData",
+    "VerificationOutcome",
+    "DiscoveryConfig",
+    "HandoffConfig",
+    "VerificationConfig",
+    "SchedulingConfig",
+    "RuntimeConfig",
+    "PhaseState",
+    "RuntimeState",
+    "EventType",
+    "RuntimeEvent",
+    "PhaseResult",
+    "RuntimeResult",
 
     # Deterministic Gates
     "DeterministicGate",

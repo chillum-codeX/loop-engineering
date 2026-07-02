@@ -1,0 +1,33 @@
+name: pr-babysitter-example
+pattern: pr-babysitter
+version: "0.4.0"
+
+runtime:
+  max_iterations: 5
+  checkpoint_preset: production
+
+budget:
+  max_tokens: 10000
+  max_cost: 1.00
+  max_steps: 10
+
+discovery:
+  skills_dir: .loop/skills
+  load_latest_on_start: true
+
+verification:
+  mandatory_gates:
+    - syntax
+    - security
+
+persistence:
+  state_dir: .loop/state
+  format: json
+  auto_save: true
+
+integrations:
+  github:
+    enabled: false
+    repository: owner/repo
+    report_path: .loop/state/pr-babysitter-report.json
+    stale_after_hours: 48

@@ -1,0 +1,58 @@
+{
+  "suite": "benchmark_evaluator_validation",
+  "network_calls": 0,
+  "claims_model_performance": false,
+  "all_oracles_passed": true,
+  "all_negative_controls_rejected": true,
+  "results": [
+    {
+      "task_id": "multihop_000",
+      "oracle_passed": true,
+      "oracle_score": 1.0,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    },
+    {
+      "task_id": "planning_000",
+      "oracle_passed": true,
+      "oracle_score": 1.0,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    },
+    {
+      "task_id": "tools_001",
+      "oracle_passed": true,
+      "oracle_score": 1.0,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    },
+    {
+      "task_id": "correction_002",
+      "oracle_passed": true,
+      "oracle_score": 1.0,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    },
+    {
+      "task_id": "budget_10",
+      "oracle_passed": true,
+      "oracle_score": 0.986,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    },
+    {
+      "task_id": "memory_001",
+      "oracle_passed": true,
+      "oracle_score": 1.0,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    },
+    {
+      "task_id": "multiagent_001",
+      "oracle_passed": true,
+      "oracle_score": 1.0,
+      "negative_rejected": true,
+      "negative_score": 0.0
+    }
+  ]
+}
