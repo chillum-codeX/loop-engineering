@@ -46,7 +46,7 @@ loop-engine = "loop_engine.cli.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["loop_engine*", "baselines*", "benchmarks*"]
+include = ["loop_engine*", "baselines*", "benchmarks*", "experiments*"]
 exclude = ["tests*"]
 
 [tool.pytest.ini_options]
