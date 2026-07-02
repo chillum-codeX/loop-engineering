@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 build/
 dist/
@@ -11,9 +12,12 @@ dist/
 .loop_checkpoints/
 .loop_state/
 .loop_worktrees/
+HANDOFF_TO_WRITER.md
 
 .venv/
 venv/
+
+experiments/results/live_provider_smoke.json
 
 Thumbs.db
 .DS_Store

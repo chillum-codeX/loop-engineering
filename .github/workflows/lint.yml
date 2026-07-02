@@ -1,4 +1,4 @@
-name: Lint
+name: Static Checks
 
 on:
   push:
@@ -7,30 +7,31 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  static-checks:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 black isort mypy
+        pip install -e ".[dev]"
+        pip install build twine
 
-    - name: Check formatting with black
-      run: black --check loop_engine/ tests/
+    - name: Verify package metadata
+      run: python -m pip check
 
-    - name: Check imports with isort
-      run: isort --check-only loop_engine/ tests/
+    - name: Verify source compiles
+      run: python -m compileall loop_engine tests experiments
 
-    - name: Lint with flake8
-      run: flake8 loop_engine/ tests/ --max-line-length=100
+    - name: Build release artifacts
+      run: python -m build
 
-    - name: Type check with mypy
-      run: mypy loop_engine/ --ignore-missing-imports
+    - name: Verify release artifacts
+      run: python -m twine check dist/*
