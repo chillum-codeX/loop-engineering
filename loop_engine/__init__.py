@@ -16,7 +16,7 @@ Based on Anthropic's Loop Engineering paper (2026):
 - Human Checkpoints
 """
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 __author__ = "Loop Engineering Research Project"
 
 from .core import LoopEngine, LoopConfig, LoopState, MultiAgentOrchestrator

@@ -5,7 +5,7 @@ Use this file as the copy bank for public launch posts.
 ## Canonical links
 
 - Repo: https://github.com/chillum-codeX/loop-engineering
-- Release: https://github.com/chillum-codeX/loop-engineering/releases/tag/v0.4.0
+- Release: https://github.com/chillum-codeX/loop-engineering/releases/tag/v0.4.1
 - Discussions: https://github.com/chillum-codeX/loop-engineering/discussions
 
 ## Short one-line description
@@ -14,7 +14,7 @@ Loop Engineering is a Python runtime for agent loops with budgets, deterministic
 
 ## GitHub Discussion / repo announcement
 
-Loop Engineering v0.4.0 is live.
+Loop Engineering v0.4.1 is live.
 
 What is in the repo now:
 
@@ -36,7 +36,7 @@ If you want to try it, start with the README and `docs/QUICKSTART.md`.
 
 ## X / Twitter
 
-Shipping today: Loop Engineering v0.4.0
+Shipping today: Loop Engineering v0.4.1
 
 A Python runtime for building agent loops with:
 - budgets

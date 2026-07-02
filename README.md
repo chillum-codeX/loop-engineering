@@ -86,7 +86,7 @@ pip install -e .
 ```
 
 The package is not yet published to PyPI. The repository and GitHub release are
-the supported installation sources for v0.4.0.
+the supported installation sources for v0.4.1.
 
 ### Create Your First Loop
 

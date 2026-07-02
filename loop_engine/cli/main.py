@@ -498,7 +498,7 @@ def generate_config(pattern: str, tool: str, name: str) -> str:
 name: {name}
 pattern: {pattern}
 tool: {tool}
-version: "0.4.0"
+version: "0.4.1"
 
 # Runtime configuration
 runtime:
@@ -593,7 +593,7 @@ Description of what this pattern does.
 
 - **Tool**: {tool}
 - **Pattern**: {pattern}
-- **Version**: 0.4.0
+- **Version**: 0.4.1
 
 ## Usage
 
