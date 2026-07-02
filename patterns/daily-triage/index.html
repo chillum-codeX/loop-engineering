@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/patterns/daily-triage/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>Daily triage - Loop Engineering</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../../css/brands.min.css" rel="stylesheet">
+        <link href="../../css/solid.min.css" rel="stylesheet">
+        <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href="../.." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../../tool-comparison/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../pr-babysitter/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/patterns/daily-triage.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#daily-triage-pattern" class="nav-link">Daily Triage Pattern</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#when" class="nav-link">When</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#read" class="nav-link">Read</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#judge" class="nav-link">Judge</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#output" class="nav-link">Output</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#stop" class="nav-link">Stop</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#configuration" class="nav-link">Configuration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#cost-estimate" class="nav-link">Cost Estimate</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#example-run" class="nav-link">Example Run</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#safety-guidelines" class="nav-link">Safety Guidelines</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#integration" class="nav-link">Integration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#see-also" class="nav-link">See Also</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="daily-triage-pattern">Daily Triage Pattern<a class="headerlink" href="#daily-triage-pattern" title="Permanent link">&para;</a></h1>
+<p>A loop that runs daily to review and prioritize tasks.</p>
+<h2 id="when">When<a class="headerlink" href="#when" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Daily at 9 AM</li>
+<li>Or when triggered manually</li>
+</ul>
+<h2 id="read">Read<a class="headerlink" href="#read" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Open issues from GitHub</li>
+<li>Open PRs from GitHub</li>
+<li>Slack messages with 🔥 emoji</li>
+<li>Calendar for today</li>
+</ul>
+<h2 id="judge">Judge<a class="headerlink" href="#judge" title="Permanent link">&para;</a></h2>
+<p>Success means:
+- All issues labeled with priority
+- PRs assigned to reviewers
+- Calendar conflicts flagged
+- Blockers identified</p>
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Labeled issues</li>
+<li>Assigned PRs</li>
+<li>Slack summary message</li>
+<li>Updated project board</li>
+</ul>
+<h2 id="stop">Stop<a class="headerlink" href="#stop" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Do not close issues without human approval</li>
+<li>Do not merge PRs</li>
+<li>Do not exceed 10,000 tokens</li>
+<li>Stop after 5 iterations</li>
+</ul>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<pre><code class="language-yaml">name: daily-triage
+pattern: daily-triage
+tool: claude
+
+runtime:
+  max_iterations: 5
+  checkpoint_preset: manual
+
+budget:
+  max_tokens: 10000
+  max_cost: 1.00
+  max_steps: 10
+
+discovery:
+  skills_dir: .loop/skills
+  load_latest_on_start: true
+
+verification:
+  enable_pre_gates: true
+  enable_post_gates: true
+  mandatory_gates:
+    - syntax
+    - security
+</code></pre>
+<h2 id="cost-estimate">Cost Estimate<a class="headerlink" href="#cost-estimate" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Per-Run Cost</th>
+<th>Monthly Cost*</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Claude Sonnet</td>
+<td>$0.15</td>
+<td>$4.50</td>
+</tr>
+<tr>
+<td>Claude Opus</td>
+<td>$0.75</td>
+<td>$22.50</td>
+</tr>
+<tr>
+<td>GPT-4</td>
+<td>$0.90</td>
+<td>$27.00</td>
+</tr>
+</tbody>
+</table>
+<p>*30 runs/month</p>
+<h2 id="example-run">Example Run<a class="headerlink" href="#example-run" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">$ loop-engine cost --pattern daily-triage
+
+💰 Cost Estimate: daily-triage
+Model: claude-sonnet
+Cadence: daily
+
+Per Run:
+  Input tokens:  2,000
+  Output tokens: 1,500
+  Total tokens:  3,500
+  Cost:          $0.0150
+
+Monthly Estimate:
+  Runs:          30
+  Total tokens:  105,000
+  Cost:          $0.45
+</code></pre>
+<h2 id="safety-guidelines">Safety Guidelines<a class="headerlink" href="#safety-guidelines" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Budget</strong>: Set max_tokens to 10,000 for safety</li>
+<li><strong>Checkpoints</strong>: Use manual preset to review changes</li>
+<li><strong>Gates</strong>: Enable syntax and security gates</li>
+<li><strong>Scope</strong>: Only label/assign, don't close or merge</li>
+</ol>
+<h2 id="integration">Integration<a class="headerlink" href="#integration" title="Permanent link">&para;</a></h2>
+<h3 id="github-actions">GitHub Actions<a class="headerlink" href="#github-actions" title="Permanent link">&para;</a></h3>
+<pre><code class="language-yaml">name: Daily Triage
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 9 AM daily
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: loop-engineering/action@v1
+        with:
+          pattern: daily-triage
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+</code></pre>
+<h3 id="slack-notification">Slack Notification<a class="headerlink" href="#slack-notification" title="Permanent link">&para;</a></h3>
+<p>Add to your SKILL.md:</p>
+<pre><code class="language-markdown">## Output
+
+- Post summary to #daily-updates
+- Tag @channel for blockers
+- Include priority counts
+</code></pre>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../issue-triage/">Issue Triage</a> - More focused on issues</li>
+<li><a href="../pr-babysitter/">PR Babysitter</a> - Focus on pull requests</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js"></script>
+        <script src="../../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/BASELINE_FAILURE_REPORT/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Baseline Failure Report - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/BASELINE_FAILURE_REPORT.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#baseline-failure-report" class="nav-link">Baseline Failure Report</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#commands-executed" class="nav-link">Commands Executed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#confirmed-defects" class="nav-link">Confirmed Defects</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#suspected-defects-to-be-verified" class="nav-link">Suspected Defects (To Be Verified)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#existing-claims-invalidated" class="nav-link">Existing Claims Invalidated</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#files-requiring-correction" class="nav-link">Files Requiring Correction</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#initial-correction-plan" class="nav-link">Initial Correction Plan</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#acceptance-criteria-for-correction-phase" class="nav-link">Acceptance Criteria for Correction Phase</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="baseline-failure-report">Baseline Failure Report<a class="headerlink" href="#baseline-failure-report" title="Permanent link">&para;</a></h1>
+<p><strong>Report Date</strong>: 2026-06-24
+<strong>Framework Version</strong>: 0.1.0 (pre-correction)
+<strong>Repository</strong>: /home/novix/workspace/project</p>
+<h2 id="commands-executed">Commands Executed<a class="headerlink" href="#commands-executed" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">cd /home/novix/workspace/project
+
+# Diagnostic test for component registration
+python3 -c &quot;
+from loop_engine.core import LoopEngine, LoopConfig
+from loop_engine.types import ComponentType
+from loop_engine.components import LLMPlanner, LLMActor
+from loop_engine.llm_client import MockLLMClient
+
+engine = LoopEngine(LoopConfig())
+llm = MockLLMClient()
+
+# Register with STRING keys (as runner.py does)
+engine.components['Planner'] = LLMPlanner(llm)
+engine.components['Actor'] = LLMActor(llm)
+
+print('Registered keys:', list(engine.components.keys()))
+print('Looking up PLANNER enum:', engine.components.get(ComponentType.PLANNER))
+print('Looking up ACTOR enum:', engine.components.get(ComponentType.ACTOR))
+&quot;
+
+# Output:
+# Registered keys: ['Planner', 'Actor']
+# Looking up PLANNER enum: None
+# Looking up ACTOR enum: None
+</code></pre>
+<pre><code class="language-bash"># Diagnostic test for recovery logic
+python3 -c &quot;
+from loop_engine.types import Failure, FailureType
+
+failures = [Failure(type=FailureType.EXECUTION_ERROR, message='test', recoverable=True)]
+
+# The broken logic from core.py lines 341-343:
+recent_failures = [f for f in failures
+                  if f.recoverable and f not in [r.get('failure') for r in
+                  [{'failure': fa} for fa in failures]]]
+
+print(f'Input failures: {len(failures)}')
+print(f'Recent failures found: {len(recent_failures)}')
+print(f'Expected: 1, Actual: {len(recent_failures)}')
+&quot;
+
+# Output:
+# Input failures: 1
+# Recent failures found: 0
+# Expected: 1, Actual: 0
+</code></pre>
+<pre><code class="language-bash"># Full loop execution test
+timeout 30 python3 -c &quot;
+import asyncio
+from experiments.runner import ExperimentRunner, ExperimentConfig
+
+config = ExperimentConfig(llm_provider='mock', num_runs=1)
+runner = ExperimentRunner(config)
+
+async def test():
+    from benchmarks.tasks.multihop import MultiHopReasoningTask
+    task = MultiHopReasoningTask(0)
+    result = await runner.run_single_task(task, 'loop_engine', 0)
+    for k, v in result.items():
+        print(f'{k}: {v}')
+
+asyncio.run(test())
+&quot;
+
+# Output:
+# INFO:loop_engine.core:Max iterations reached
+# task_id: multihop_000
+# task_name: Multi-Hop Reasoning
+# method: loop_engine
+# run_id: 0
+# success: False
+# score: 0.0
+# execution_time: 0.0005
+# iterations: 100
+# token_usage: 0
+# metadata: {'actual': 'None', ...}
+</code></pre>
+<h2 id="confirmed-defects">Confirmed Defects<a class="headerlink" href="#confirmed-defects" title="Permanent link">&para;</a></h2>
+<h3 id="critical-defect-1-component-registration-mismatch">CRITICAL DEFECT 1: Component Registration Mismatch<a class="headerlink" href="#critical-defect-1-component-registration-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>experiments/runner.py</code> lines 71-76
+<strong>Root Cause</strong>: Type mismatch between registration keys and retrieval keys</p>
+<p><strong>Registration</strong> (in runner.py):</p>
+<pre><code class="language-python">engine.components['Planner'] = LLMPlanner(...)  # STRING key
+engine.components['Actor'] = LLMActor(...)      # STRING key
+</code></pre>
+<p><strong>Retrieval</strong> (in core.py line 236):</p>
+<pre><code class="language-python">planner = self.components.get(ComponentType.PLANNER)  # ENUM key
+</code></pre>
+<p><strong>Impact</strong>: Components are registered but NEVER found during execution. The loop runs with no planner, actor, observer, evaluator, recovery, or terminator.</p>
+<p><strong>Evidence</strong>:
+- Registered keys: <code>['Planner', 'Actor']</code>
+- Lookup by enum returns: <code>None</code> for all components</p>
+<h3 id="critical-defect-2-recovery-logic-broken">CRITICAL DEFECT 2: Recovery Logic Broken<a class="headerlink" href="#critical-defect-2-recovery-logic-broken" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>loop_engine/core.py</code> lines 341-343
+<strong>Root Cause</strong>: Flawed list comprehension comparing objects incorrectly</p>
+<p><strong>Defective Code</strong>:</p>
+<pre><code class="language-python">recent_failures = [f for f in self.state.failures
+                  if f.recoverable and f not in [r.get('failure') for r in
+                  [{'failure': fa} for fa in self.state.failures]]]
+</code></pre>
+<p><strong>Problem</strong>: The inner list creates <code>[{'failure': fa} for fa in failures]</code> (list of dicts), then extracts <code>[r.get('failure') for r in ...]</code> (list of Failure objects). The comparison <code>f not in [...]</code> should find <code>f</code> in the list, making the condition False.</p>
+<p><strong>Impact</strong>: <code>recent_failures</code> is ALWAYS empty. Recovery NEVER executes, even when failures occur.</p>
+<p><strong>Evidence</strong>:
+- Input failures: 1
+- Recent failures found: 0
+- Expected: 1</p>
+<h3 id="critical-defect-3-missing-component-integration">CRITICAL DEFECT 3: Missing Component Integration<a class="headerlink" href="#critical-defect-3-missing-component-integration" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>loop_engine/core.py</code>, <code>loop_engine/verification/</code>, <code>loop_engine/memory/</code>, <code>loop_engine/safety/</code>, <code>loop_engine/budget/</code></p>
+<p><strong>Issue</strong>: The following components exist but are NOT integrated into the main execution loop:
+- <code>CrossVerifier</code> - never called
+- <code>SafetyMonitor</code> - never started
+- <code>MultiTierMemory</code> - never read/written
+- <code>BudgetManager</code> - instantiated but not used for enforcement
+- <code>AnomalyDetector</code> - never called
+- <code>CircuitBreaker</code> - never used</p>
+<p><strong>Configuration Flags</strong> (all decorative):
+- <code>enable_verification</code> - skips integration entirely
+- <code>enable_memory</code> - never checked
+- <code>enable_safety</code> - never checked</p>
+<h3 id="defect-4-no-explicit-state-machine">DEFECT 4: No Explicit State Machine<a class="headerlink" href="#defect-4-no-explicit-state-machine" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>loop_engine/core.py</code></p>
+<p><strong>Issue</strong>: Status is loosely managed. The engine can return <code>RUNNING</code> after execution completes.</p>
+<p><strong>Evidence</strong>:
+- No state transition validation
+- Final status determined by heuristic, not explicit state
+- Line 402: <code>return self.state.status</code> can return RUNNING</p>
+<h3 id="defect-5-hardcoded-paths">DEFECT 5: Hardcoded Paths<a class="headerlink" href="#defect-5-hardcoded-paths" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>experiments/runner.py</code> line 18</p>
+<pre><code class="language-python">sys.path.insert(0, '/home/novix/workspace/project')  # MACHINE-SPECIFIC
+</code></pre>
+<p><strong>File</strong>: <code>experiments/runner.py</code> line 48</p>
+<pre><code class="language-python">output_dir: str = &quot;/home/novix/workspace/project/experiments/results&quot;
+</code></pre>
+<h3 id="defect-6-incomplete-benchmark-tasks">DEFECT 6: Incomplete Benchmark Tasks<a class="headerlink" href="#defect-6-incomplete-benchmark-tasks" title="Permanent link">&para;</a></h3>
+<p><strong>Files</strong>: <code>benchmarks/tasks/*.py</code></p>
+<p><strong>Issue</strong>: Most <code>evaluate()</code> methods contain stub implementations that don't actually validate task completion.</p>
+<p><strong>Example</strong> (multihop.py):</p>
+<pre><code class="language-python">def evaluate(self, output: Any, metadata: Optional[Dict] = None) -&gt; BenchmarkResult:
+    # This will be implemented with actual execution results
+    pass
+</code></pre>
+<h3 id="defect-7-no-automated-test-suite">DEFECT 7: No Automated Test Suite<a class="headerlink" href="#defect-7-no-automated-test-suite" title="Permanent link">&para;</a></h3>
+<p><strong>Status</strong>: Zero automated tests exist
+<strong>Impact</strong>: No proof that any component is called, no regression protection</p>
+<h2 id="suspected-defects-to-be-verified">Suspected Defects (To Be Verified)<a class="headerlink" href="#suspected-defects-to-be-verified" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Budget Enforcement</strong>: Budget checks happen but budget is never actually consumed (no token counting)</li>
+<li><strong>Termination Logic</strong>: Terminator component not found (None), falls back to simple progress check</li>
+<li><strong>Plan Progress</strong>: Always returns 0.0 because steps never complete (actor never executes)</li>
+<li><strong>Safety Claims</strong>: 100% security defense rate in existing results - unverified due to mock model</li>
+</ol>
+<h2 id="existing-claims-invalidated">Existing Claims Invalidated<a class="headerlink" href="#existing-claims-invalidated" title="Permanent link">&para;</a></h2>
+<p>From <code>HANDOFF_TO_WRITER.md</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Status</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Verification components are implemented and integrated"</td>
+<td>INVALID</td>
+<td>Components exist but never called</td>
+</tr>
+<tr>
+<td>"AdaptiveRecovery component implements... strategies"</td>
+<td>INVALID</td>
+<td>Recovery never executes</td>
+</tr>
+<tr>
+<td>"Four out of four prompt injection attacks blocked (100%)"</td>
+<td>INVALID</td>
+<td>Mock model, not real security test</td>
+</tr>
+<tr>
+<td>"All 5 security attack attempts were successfully blocked"</td>
+<td>INVALID</td>
+<td>No actual security execution</td>
+</tr>
+<tr>
+<td>"Multi-tier memory system... implemented"</td>
+<td>PARTIAL</td>
+<td>Implemented but not integrated</td>
+</tr>
+<tr>
+<td>"BudgetManager tracks tokens, steps, time, and cost"</td>
+<td>PARTIAL</td>
+<td>Tracks but doesn't enforce limits</td>
+</tr>
+<tr>
+<td>"H1-H5: Framework validated"</td>
+<td>UNSUPPORTED</td>
+<td>No empirical validation possible</td>
+</tr>
+</tbody>
+</table>
+<h2 id="files-requiring-correction">Files Requiring Correction<a class="headerlink" href="#files-requiring-correction" title="Permanent link">&para;</a></h2>
+<ol>
+<li><code>loop_engine/core.py</code> - Fix component retrieval, recovery logic, state machine, integration</li>
+<li><code>experiments/runner.py</code> - Fix component registration, remove hardcoded paths</li>
+<li><code>loop_engine/types.py</code> - Add missing failure lifecycle tracking</li>
+<li><code>loop_engine/components.py</code> - Fix recovery interface</li>
+<li><code>benchmarks/tasks/*.py</code> - Implement evaluate() methods</li>
+<li><code>loop_engine/verification/verifier.py</code> - Connect to main loop</li>
+<li><code>loop_engine/memory/memory.py</code> - Connect to main loop</li>
+<li><code>loop_engine/safety/safety_monitor.py</code> - Connect to main loop</li>
+<li><code>loop_engine/budget/budget_manager.py</code> - Connect to main loop</li>
+</ol>
+<h2 id="initial-correction-plan">Initial Correction Plan<a class="headerlink" href="#initial-correction-plan" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-component-registry-fix">Phase 1: Component Registry Fix<a class="headerlink" href="#phase-1-component-registry-fix" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Establish canonical registration API using ComponentType enum ONLY</li>
+<li>Reject string keys</li>
+<li>Add interface validation</li>
+<li>Add registration tests</li>
+</ul>
+<h3 id="phase-2-recovery-tracking-fix">Phase 2: Recovery Tracking Fix<a class="headerlink" href="#phase-2-recovery-tracking-fix" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Implement explicit failure identity tracking</li>
+<li>Define failure lifecycle states</li>
+<li>Fix recovery selection logic</li>
+<li>Add recovery tests</li>
+</ul>
+<h3 id="phase-3-state-machine">Phase 3: State Machine<a class="headerlink" href="#phase-3-state-machine" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Implement explicit execution states</li>
+<li>Define valid transitions</li>
+<li>Ensure final status correctness</li>
+</ul>
+<h3 id="phase-4-configuration-connection">Phase 4: Configuration Connection<a class="headerlink" href="#phase-4-configuration-connection" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Connect enable_* flags to actual behavior</li>
+<li>Ensure safety controls are immutable</li>
+<li>Add configuration integration tests</li>
+</ul>
+<h3 id="phase-5-full-runtime-integration">Phase 5: Full Runtime Integration<a class="headerlink" href="#phase-5-full-runtime-integration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Integrate verification into loop</li>
+<li>Integrate memory read/write</li>
+<li>Integrate safety checks</li>
+<li>Add component call counters</li>
+</ul>
+<h3 id="phase-6-deterministic-model">Phase 6: Deterministic Model<a class="headerlink" href="#phase-6-deterministic-model" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Replace MockLLMClient with ScriptedModel</li>
+<li>Support controlled test scenarios</li>
+<li>Enable deterministic testing</li>
+</ul>
+<h3 id="phase-7-test-suite">Phase 7: Test Suite<a class="headerlink" href="#phase-7-test-suite" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Create comprehensive pytest suite</li>
+<li>Cover all critical paths</li>
+<li>Include adversarial tests</li>
+</ul>
+<h3 id="phase-8-benchmark-validity">Phase 8: Benchmark Validity<a class="headerlink" href="#phase-8-benchmark-validity" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Audit existing results</li>
+<li>Move invalid results to invalidated/</li>
+<li>Implement evaluate() methods</li>
+<li>Create valid benchmark comparison</li>
+</ul>
+<h3 id="phase-9-multi-agent">Phase 9: Multi-Agent<a class="headerlink" href="#phase-9-multi-agent" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Implement orchestrator</li>
+<li>Create deterministic multi-agent demo</li>
+<li>Test conflict detection</li>
+</ul>
+<h3 id="phase-10-packaging">Phase 10: Packaging<a class="headerlink" href="#phase-10-packaging" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Remove hardcoded paths</li>
+<li>Use pathlib</li>
+<li>Validate clean installation</li>
+</ul>
+<h2 id="acceptance-criteria-for-correction-phase">Acceptance Criteria for Correction Phase<a class="headerlink" href="#acceptance-criteria-for-correction-phase" title="Permanent link">&para;</a></h2>
+<p>Before declaring completion:
+- [ ] Component registration uses enum keys exclusively
+- [ ] Test proves planner, actor, observer, evaluator are called
+- [ ] Engine never returns RUNNING after execution
+- [ ] Recovery executes for eligible failures (test proves)
+- [ ] Recovery doesn't repeat indefinitely (test proves)
+- [ ] Verification affects completion (test proves)
+- [ ] Memory affects execution when enabled (test proves)
+- [ ] Budgets enforced with pre-action checks (test proves)
+- [ ] Existing invalid benchmark results labeled
+- [ ] <code>pytest -q</code> passes all tests
+- [ ] Research claims match evidence</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

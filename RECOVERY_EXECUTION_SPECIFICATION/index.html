@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/RECOVERY_EXECUTION_SPECIFICATION/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Recovery execution - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../STEP_LIFECYCLE_SPECIFICATION/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../FINAL_VALIDATION_REPORT/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/RECOVERY_EXECUTION_SPECIFICATION.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#recovery-execution-specification" class="nav-link">Recovery Execution Specification</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#1-overview" class="nav-link">1. Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#2-recovery-architecture" class="nav-link">2. Recovery Architecture</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#3-recovery-strategies" class="nav-link">3. Recovery Strategies</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#4-recovery-handler-interface" class="nav-link">4. Recovery Handler Interface</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#5-recovery-registry" class="nav-link">5. Recovery Registry</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#6-integration-with-loop-engine" class="nav-link">6. Integration with Loop Engine</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#7-required-tests" class="nav-link">7. Required Tests</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#8-implementation-plan" class="nav-link">8. Implementation Plan</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="recovery-execution-specification">Recovery Execution Specification<a class="headerlink" href="#recovery-execution-specification" title="Permanent link">&para;</a></h1>
+<p><strong>Document Date</strong>: 2026-06-24
+<strong>Framework Version</strong>: 0.3.0
+<strong>Status</strong>: IMPLEMENTATION SPECIFICATION</p>
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document specifies the recovery execution system for the Loop Engineering Framework. Recovery must not stop at generating a <code>RecoveryAction</code> object—it must perform actual state-changing operations.</p>
+<h2 id="2-recovery-architecture">2. Recovery Architecture<a class="headerlink" href="#2-recovery-architecture" title="Permanent link">&para;</a></h2>
+<p>Recovery separates four concerns:
+1. <strong>Decision</strong>: Select appropriate recovery strategy
+2. <strong>Execution</strong>: Perform the recovery operation
+3. <strong>Validation</strong>: Verify postconditions
+4. <strong>State Update</strong>: Update runtime state based on outcome</p>
+<h2 id="3-recovery-strategies">3. Recovery Strategies<a class="headerlink" href="#3-recovery-strategies" title="Permanent link">&para;</a></h2>
+<h3 id="31-retry">3.1 RETRY<a class="headerlink" href="#31-retry" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Re-execute the failed step with same parameters.</p>
+<p><strong>Preconditions</strong>:
+- Step is in EVALUATION_FAILED or VERIFICATION_FAILED state
+- Retry count &lt; max_retry_attempts</p>
+<p><strong>Execution</strong>:
+1. Mark step as RETRY_PENDING
+2. Increment retry counter
+3. Reset step execution fields (clear output, timestamps)
+4. Transition step to READY
+5. Schedule for re-execution</p>
+<p><strong>Postconditions</strong>:
+- Step.status == READY
+- Step.retry_count incremented
+- Step.output is None
+- Step.start_time is None</p>
+<p><strong>Success Criteria</strong>:
+- Step successfully transitioned to READY
+- Step is picked up by next planning phase</p>
+<p><strong>Failure Criteria</strong>:
+- Max retries exceeded
+- Step cannot be reset</p>
+<h3 id="32-retry_with_backoff">3.2 RETRY_WITH_BACKOFF<a class="headerlink" href="#32-retry_with_backoff" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Retry with delay policy to avoid rapid failure loops.</p>
+<p><strong>Preconditions</strong>:
+- Same as RETRY
+- Injectable clock available for testing</p>
+<p><strong>Execution</strong>:
+1. Calculate delay: <code>delay = backoff_base * (2 ** retry_count)</code>
+2. Record delay policy in step metadata
+3. Wait via injectable clock (NOT asyncio.sleep in production)
+4. Execute RETRY logic</p>
+<p><strong>Postconditions</strong>:
+- Delay recorded in step.metadata['backoff_delay']
+- Retry only after delay condition satisfied</p>
+<p><strong>Testing</strong>:
+- Use mock clock that advances time explicitly
+- Do NOT use real time delays in tests</p>
+<h3 id="33-replan_step">3.3 REPLAN_STEP<a class="headerlink" href="#33-replan_step" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Replace failed step with corrected version.</p>
+<p><strong>Preconditions</strong>:
+- Planner component available
+- Step has failed (EVALUATION_FAILED or VERIFICATION_FAILED)</p>
+<p><strong>Execution</strong>:
+1. Preserve failure evidence in step.metadata['failure_evidence']
+2. Call planner.revise_step() with failure context
+3. Create new step version with:
+   - New step.id
+   - Same dependencies
+   - Corrected description/action
+   - Version incremented
+4. Replace failed step in plan.steps (preserve order)
+5. Mark unaffected completed steps as unchanged</p>
+<p><strong>Postconditions</strong>:
+- Failed step replaced with corrected version
+- New step.status == PENDING
+- Plan.version incremented
+- Completed steps remain completed</p>
+<p><strong>Success Criteria</strong>:
+- New step created with corrected parameters
+- Plan updated</p>
+<h3 id="34-replan_remaining_task">3.4 REPLAN_REMAINING_TASK<a class="headerlink" href="#34-replan_remaining_task" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Replan remaining uncompleted steps.</p>
+<p><strong>Preconditions</strong>:
+- Planner component available
+- Some steps completed, some failed/pending</p>
+<p><strong>Execution</strong>:
+1. Preserve completed steps
+2. Identify remaining task scope
+3. Call planner.revise_plan() with:
+   - Current plan
+   - Observations
+   - Evaluations
+   - Failure context
+4. Merge new plan with completed steps</p>
+<p><strong>Postconditions</strong>:
+- Completed steps unchanged
+- Remaining steps revised
+- Plan.version incremented</p>
+<h3 id="35-rollback">3.5 ROLLBACK<a class="headerlink" href="#35-rollback" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Restore previous artifact snapshot.</p>
+<p><strong>Preconditions</strong>:
+- Snapshot system available
+- Previous valid state exists</p>
+<p><strong>Execution</strong>:
+1. Identify rollback target (last VERIFIED_COMPLETED step)
+2. Restore artifact snapshot
+3. Verify rollback success (checksum/state hash)
+4. Mark rollback in trace
+5. Reset subsequent steps to PENDING</p>
+<p><strong>Postconditions</strong>:
+- Artifacts restored to previous state
+- Subsequent steps reset
+- Rollback recorded in trace</p>
+<h3 id="36-change_tool">3.6 CHANGE_TOOL<a class="headerlink" href="#36-change_tool" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Use alternative tool for same task.</p>
+<p><strong>Preconditions</strong>:
+- Alternative tools available
+- Tool registry accessible</p>
+<p><strong>Execution</strong>:
+1. Select alternative tool from registry
+2. Update step.tool field
+3. Reset step to READY
+4. Mark tool change in metadata</p>
+<h3 id="37-change_model">3.7 CHANGE_MODEL<a class="headerlink" href="#37-change_model" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Use different model for same task.</p>
+<p><strong>Preconditions</strong>:
+- Multiple models available
+- Model switcher accessible</p>
+<p><strong>Execution</strong>:
+1. Select alternative model
+2. Update step.model field
+3. Reset step to READY
+4. Mark model change in metadata</p>
+<h3 id="38-reduce_scope">3.8 REDUCE_SCOPE<a class="headerlink" href="#38-reduce_scope" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Reduce task scope to achievable subset.</p>
+<p><strong>Preconditions</strong>:
+- Scope reduction policy defined
+- Partial completion acceptable</p>
+<p><strong>Execution</strong>:
+1. Identify minimum viable scope
+2. Mark optional steps as SKIPPED
+3. Replan remaining required steps
+4. Update goal description</p>
+<p><strong>Postconditions</strong>:
+- Some steps marked SKIPPED
+- Reduced scope documented</p>
+<h3 id="39-request_human">3.9 REQUEST_HUMAN<a class="headerlink" href="#39-request_human" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Escalate to human operator.</p>
+<p><strong>Preconditions</strong>:
+- Human escalation configured
+- Escalation channel available</p>
+<p><strong>Execution</strong>:
+1. Transition to WAITING_FOR_HUMAN state
+2. Include decision context:
+   - Failed step details
+   - Recovery attempts made
+   - Options for human
+3. Wait for human response
+4. Resume based on human instruction</p>
+<p><strong>Postconditions</strong>:
+- State == WAITING_FOR_HUMAN
+- Human context prepared</p>
+<h3 id="310-abstain">3.10 ABSTAIN<a class="headerlink" href="#310-abstain" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Intentionally stop without completing.</p>
+<p><strong>Preconditions</strong>:
+- Safe abstention policy allows
+- No critical requirements violated</p>
+<p><strong>Execution</strong>:
+1. Transition to ABSTAINED state
+2. Document abstention reason
+3. Preserve partial results
+4. Terminate gracefully</p>
+<h3 id="311-terminate">3.11 TERMINATE<a class="headerlink" href="#311-terminate" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Stop with failure status.</p>
+<p><strong>Preconditions</strong>:
+- Non-recoverable failure
+- Max attempts exceeded</p>
+<p><strong>Execution</strong>:
+1. Mark failure as TERMINAL
+2. Transition to FAILED state
+3. Preserve failure evidence
+4. Terminate with error result</p>
+<h2 id="4-recovery-handler-interface">4. Recovery Handler Interface<a class="headerlink" href="#4-recovery-handler-interface" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">class RecoveryHandler(ABC):
+    &quot;&quot;&quot;Base class for recovery strategy handlers.&quot;&quot;&quot;
+
+    @abstractmethod
+    async def execute(
+        self,
+        failure: Failure,
+        step: Step,
+        state: LoopState,
+        context: LoopContext
+    ) -&gt; RecoveryResult:
+        &quot;&quot;&quot;
+        Execute recovery strategy.
+
+        Returns:
+            RecoveryResult with success/failure and state changes
+        &quot;&quot;&quot;
+        pass
+
+    @abstractmethod
+    def validate_postconditions(
+        self,
+        step: Step,
+        state: LoopState
+    ) -&gt; bool:
+        &quot;&quot;&quot;Verify recovery produced valid state.&quot;&quot;&quot;
+        pass
+
+
+@dataclass
+class RecoveryResult:
+    &quot;&quot;&quot;Result of recovery execution.&quot;&quot;&quot;
+    success: bool
+    new_state: Optional[ExecutionState] = None
+    step_status: Optional[StepStatus] = None
+    message: str = &quot;&quot;
+    evidence: Dict[str, Any] = field(default_factory=dict)
+</code></pre>
+<h2 id="5-recovery-registry">5. Recovery Registry<a class="headerlink" href="#5-recovery-registry" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">class RecoveryRegistry:
+    &quot;&quot;&quot;Registry of recovery strategy handlers.&quot;&quot;&quot;
+
+    def __init__(self):
+        self._handlers: Dict[RecoveryStrategy, RecoveryHandler] = {}
+
+    def register(self, strategy: RecoveryStrategy, handler: RecoveryHandler):
+        self._handlers[strategy] = handler
+
+    async def execute(
+        self,
+        strategy: RecoveryStrategy,
+        failure: Failure,
+        step: Step,
+        state: LoopState,
+        context: LoopContext
+    ) -&gt; RecoveryResult:
+        handler = self._handlers.get(strategy)
+        if not handler:
+            return RecoveryResult(
+                success=False,
+                message=f&quot;No handler for strategy {strategy}&quot;
+            )
+
+        # Execute recovery
+        result = await handler.execute(failure, step, state, context)
+
+        # Validate postconditions
+        if result.success:
+            valid = handler.validate_postconditions(step, state)
+            if not valid:
+                result.success = False
+                result.message = &quot;Recovery postconditions not met&quot;
+
+        return result
+</code></pre>
+<h2 id="6-integration-with-loop-engine">6. Integration with Loop Engine<a class="headerlink" href="#6-integration-with-loop-engine" title="Permanent link">&para;</a></h2>
+<h3 id="61-recovery-execution-flow">6.1 Recovery Execution Flow<a class="headerlink" href="#61-recovery-execution-flow" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">async def _execute_recovery(self, context: LoopContext, evaluation: Optional[Evaluation] = None):
+    &quot;&quot;&quot;Execute recovery with real handlers.&quot;&quot;&quot;
+    recovery = self.components.get(ComponentType.RECOVERY)
+    if not recovery:
+        return
+
+    # Get unhandled failures
+    recent_failures = [
+        f for f in self.state.failures
+        if f.status == FailureStatus.UNHANDLED and f.can_recover()
+    ]
+
+    if not recent_failures:
+        return
+
+    failure = recent_failures[-1]
+    failure.status = FailureStatus.RECOVERY_PLANNED
+
+    # Get recovery action (decision)
+    recovery_action = await recovery.recover(
+        failure,
+        self.state,
+        context
+    )
+
+    # Execute recovery strategy (real execution)
+    result = await self._recovery_registry.execute(
+        strategy=recovery_action.strategy,
+        failure=failure,
+        step=self.state.current_step,
+        state=self.state,
+        context=context
+    )
+
+    # Update based on result
+    recovery_action.executed = True
+    recovery_action.success = result.success
+    failure.record_recovery_attempt(recovery_action.action_id)
+
+    if result.success:
+        failure.mark_recovered()
+        # Transition to appropriate state
+        if result.new_state:
+            self._transition_to(result.new_state)
+    else:
+        if not failure.can_recover():
+            failure.mark_terminal()
+            self.state.execution_state = ExecutionState.FAILED
+</code></pre>
+<h3 id="62-state-transitions-after-recovery">6.2 State Transitions After Recovery<a class="headerlink" href="#62-state-transitions-after-recovery" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Recovery Result</th>
+<th>Next State</th>
+<th>Conditions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RETRY success</td>
+<td>ITERATION_COMPLETE</td>
+<td>Step reset to READY</td>
+</tr>
+<tr>
+<td>REPLAN success</td>
+<td>REPLANNING</td>
+<td>Plan revised</td>
+</tr>
+<tr>
+<td>ROLLBACK success</td>
+<td>REPLANNING</td>
+<td>State restored</td>
+</tr>
+<tr>
+<td>HUMAN requested</td>
+<td>WAITING_FOR_HUMAN</td>
+<td>Escalation needed</td>
+</tr>
+<tr>
+<td>Failure</td>
+<td>FAILED</td>
+<td>Max attempts or unrecoverable</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-required-tests">7. Required Tests<a class="headerlink" href="#7-required-tests" title="Permanent link">&para;</a></h2>
+<h3 id="71-retry-tests">7.1 Retry Tests<a class="headerlink" href="#71-retry-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>First retry succeeds</li>
+<li>Retry increments counter</li>
+<li>Step fields reset properly</li>
+<li>Step returns to READY</li>
+</ul>
+<h3 id="72-replan-tests">7.2 Replan Tests<a class="headerlink" href="#72-replan-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Failed step replaced</li>
+<li>Completed steps preserved</li>
+<li>Plan version incremented</li>
+<li>New step has correct dependencies</li>
+</ul>
+<h3 id="73-rollback-tests">7.3 Rollback Tests<a class="headerlink" href="#73-rollback-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Snapshot restored</li>
+<li>Verification passes</li>
+<li>Subsequent steps reset</li>
+<li>Rollback recorded in trace</li>
+</ul>
+<h3 id="74-limit-tests">7.4 Limit Tests<a class="headerlink" href="#74-limit-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Max attempts enforced</li>
+<li>New failure creates new ID</li>
+<li>Recovered failures not reprocessed</li>
+<li>Terminal failures stop recovery</li>
+</ul>
+<h3 id="75-state-transition-tests">7.5 State Transition Tests<a class="headerlink" href="#75-state-transition-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Recovery success → valid state</li>
+<li>Recovery failure → FAILED</li>
+<li>Postcondition validation works</li>
+</ul>
+<h2 id="8-implementation-plan">8. Implementation Plan<a class="headerlink" href="#8-implementation-plan" title="Permanent link">&para;</a></h2>
+<h3 id="81-files-to-create">8.1 Files to Create<a class="headerlink" href="#81-files-to-create" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>loop_engine/recovery/handlers.py</code> - Recovery handlers</li>
+<li><code>loop_engine/recovery/registry.py</code> - Recovery registry</li>
+<li><code>loop_engine/recovery/__init__.py</code> - Package init</li>
+</ul>
+<h3 id="82-files-to-modify">8.2 Files to Modify<a class="headerlink" href="#82-files-to-modify" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>loop_engine/core.py</code> - Integrate recovery registry</li>
+<li><code>loop_engine/components.py</code> - Update recovery interface</li>
+<li><code>tests/unit/test_recovery.py</code> - Recovery tests</li>
+</ul>
+<h3 id="83-default-handlers">8.3 Default Handlers<a class="headerlink" href="#83-default-handlers" title="Permanent link">&para;</a></h3>
+<p>Implement handlers for:
+- RETRY (essential)
+- REPLAN_STEP (essential)
+- REQUEST_HUMAN (essential)
+- TERMINATE (essential)</p>
+<p>Optional handlers (future):
+- RETRY_WITH_BACKOFF
+- ROLLBACK
+- CHANGE_TOOL
+- CHANGE_MODEL
+- REDUCE_SCOPE</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

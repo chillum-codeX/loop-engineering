@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/STEP_LIFECYCLE_SPECIFICATION/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Step lifecycle - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../STATE_MACHINE_SPECIFICATION/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../RECOVERY_EXECUTION_SPECIFICATION/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/STEP_LIFECYCLE_SPECIFICATION.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#step-lifecycle-specification" class="nav-link">Step Lifecycle Specification</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#1-overview" class="nav-link">1. Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#2-stepstatus-enum" class="nav-link">2. StepStatus Enum</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#3-normal-lifecycle" class="nav-link">3. Normal Lifecycle</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#4-permission-matrix" class="nav-link">4. Permission Matrix</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#5-step-lifecycle-states-detailed" class="nav-link">5. Step Lifecycle States Detailed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#6-plan-progress-calculation" class="nav-link">6. Plan Progress Calculation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#7-disabled-verification-policy" class="nav-link">7. Disabled Verification Policy</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#8-required-tests" class="nav-link">8. Required Tests</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#9-implementation-changes" class="nav-link">9. Implementation Changes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#10-migration-from-string-statuses" class="nav-link">10. Migration from String Statuses</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="step-lifecycle-specification">Step Lifecycle Specification<a class="headerlink" href="#step-lifecycle-specification" title="Permanent link">&para;</a></h1>
+<p><strong>Document Date</strong>: 2026-06-24
+<strong>Framework Version</strong>: 0.3.0
+<strong>Status</strong>: IMPLEMENTATION SPECIFICATION</p>
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document specifies the complete lifecycle of a step within the Loop Engineering Framework, replacing ambiguous string statuses with a typed <code>StepStatus</code> enum and defining clear semantics for execution, evaluation, verification, and completion.</p>
+<h2 id="2-stepstatus-enum">2. StepStatus Enum<a class="headerlink" href="#2-stepstatus-enum" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">class StepStatus(Enum):
+    &quot;&quot;&quot;Explicit step lifecycle states.&quot;&quot;&quot;
+
+    # Initial states
+    PENDING = &quot;pending&quot;           # Step created, not yet ready
+    READY = &quot;ready&quot;               # Step ready for execution
+
+    # Execution states
+    IN_PROGRESS = &quot;in_progress&quot;   # Currently executing
+    EXECUTED = &quot;executed&quot;         # Actor completed, awaiting evaluation
+
+    # Evaluation states
+    EVALUATION_FAILED = &quot;evaluation_failed&quot;  # Evaluation rejected
+    EVALUATED = &quot;evaluated&quot;       # Evaluation passed, awaiting verification
+
+    # Verification states
+    VERIFICATION_FAILED = &quot;verification_failed&quot;  # Verification rejected
+    VERIFIED_COMPLETED = &quot;verified_completed&quot;    # Fully complete
+
+    # Recovery states
+    RECOVERY_PENDING = &quot;recovery_pending&quot;  # Awaiting recovery action
+    RETRY_PENDING = &quot;retry_pending&quot;        # Ready for retry after recovery
+
+    # Terminal states
+    BLOCKED = &quot;blocked&quot;           # Cannot proceed (dependencies)
+    SKIPPED = &quot;skipped&quot;           # Intentionally skipped
+    FAILED = &quot;failed&quot;             # Permanently failed
+    CANCELLED = &quot;cancelled&quot;       # Cancelled before completion
+</code></pre>
+<h2 id="3-normal-lifecycle">3. Normal Lifecycle<a class="headerlink" href="#3-normal-lifecycle" title="Permanent link">&para;</a></h2>
+<pre><code>PENDING
+    ↓ (dependencies satisfied)
+READY
+    ↓ (actor starts)
+IN_PROGRESS
+    ↓ (actor completes)
+EXECUTED
+    ↓ (evaluator passes)
+EVALUATED
+    ↓ (verifier passes) OR (verification disabled)
+VERIFIED_COMPLETED
+</code></pre>
+<h2 id="4-permission-matrix">4. Permission Matrix<a class="headerlink" href="#4-permission-matrix" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Can Set Status</th>
+<th>Can Transition From</th>
+<th>Can Transition To</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Planner</strong></td>
+<td>PENDING, READY, BLOCKED</td>
+<td>-</td>
+<td>PENDING, READY, BLOCKED</td>
+</tr>
+<tr>
+<td><strong>Actor</strong></td>
+<td>IN_PROGRESS, EXECUTED</td>
+<td>READY</td>
+<td>IN_PROGRESS, EXECUTED</td>
+</tr>
+<tr>
+<td><strong>Evaluator</strong></td>
+<td>EVALUATED, EVALUATION_FAILED</td>
+<td>EXECUTED</td>
+<td>EVALUATED, EVALUATION_FAILED</td>
+</tr>
+<tr>
+<td><strong>Verifier</strong></td>
+<td>VERIFIED_COMPLETED, VERIFICATION_FAILED</td>
+<td>EVALUATED</td>
+<td>VERIFIED_COMPLETED, VERIFICATION_FAILED</td>
+</tr>
+<tr>
+<td><strong>Recovery</strong></td>
+<td>RECOVERY_PENDING, RETRY_PENDING</td>
+<td>EVALUATION_FAILED, VERIFICATION_FAILED</td>
+<td>RECOVERY_PENDING, RETRY_PENDING</td>
+</tr>
+<tr>
+<td><strong>Recovery</strong></td>
+<td>READY</td>
+<td>RETRY_PENDING</td>
+<td>READY</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-step-lifecycle-states-detailed">5. Step Lifecycle States Detailed<a class="headerlink" href="#5-step-lifecycle-states-detailed" title="Permanent link">&para;</a></h2>
+<h3 id="51-pending">5.1 PENDING<a class="headerlink" href="#51-pending" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Step created by planner</li>
+<li><strong>Exit</strong>: When dependencies satisfied → READY</li>
+<li><strong>Permissions</strong>: Planner can set</li>
+</ul>
+<h3 id="52-ready">5.2 READY<a class="headerlink" href="#52-ready" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: PENDING with dependencies satisfied</li>
+<li><strong>Exit</strong>: When actor starts → IN_PROGRESS</li>
+<li><strong>Permissions</strong>: Planner can set; Recovery can set after RETRY_PENDING</li>
+</ul>
+<h3 id="53-in_progress">5.3 IN_PROGRESS<a class="headerlink" href="#53-in_progress" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Actor starts execution</li>
+<li><strong>Exit</strong>: When actor returns → EXECUTED</li>
+<li><strong>Permissions</strong>: Only Actor can set</li>
+<li><strong>Side Effects</strong>: step.start_time recorded</li>
+</ul>
+<h3 id="54-executed">5.4 EXECUTED<a class="headerlink" href="#54-executed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Actor completed successfully</li>
+<li><strong>Exit</strong>: Evaluation result → EVALUATED or EVALUATION_FAILED</li>
+<li><strong>Permissions</strong>: Only Actor can set</li>
+<li><strong>Side Effects</strong>: step.end_time recorded; step.output stored</li>
+</ul>
+<h3 id="55-evaluation_failed">5.5 EVALUATION_FAILED<a class="headerlink" href="#55-evaluation_failed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Evaluator rejected step</li>
+<li><strong>Exit</strong>: Recovery → RECOVERY_PENDING or RETRY_PENDING</li>
+<li><strong>Permissions</strong>: Only Evaluator can set</li>
+<li><strong>Blocking</strong>: YES - does not count as complete</li>
+</ul>
+<h3 id="56-evaluated">5.6 EVALUATED<a class="headerlink" href="#56-evaluated" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Evaluator approved step</li>
+<li><strong>Exit</strong>:</li>
+<li>If verification enabled → VERIFYING (via verifier)</li>
+<li>If verification disabled → VERIFIED_COMPLETED</li>
+<li><strong>Permissions</strong>: Only Evaluator can set</li>
+<li><strong>Blocking</strong>: NO (unless verification required)</li>
+</ul>
+<h3 id="57-verification_failed">5.7 VERIFICATION_FAILED<a class="headerlink" href="#57-verification_failed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Verifier rejected step</li>
+<li><strong>Exit</strong>: Recovery → RECOVERY_PENDING or RETRY_PENDING</li>
+<li><strong>Permissions</strong>: Only Verifier can set</li>
+<li><strong>Blocking</strong>: YES - does not count as complete</li>
+</ul>
+<h3 id="58-verified_completed">5.8 VERIFIED_COMPLETED<a class="headerlink" href="#58-verified_completed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Verifier approved step (or evaluation sufficient when verification disabled)</li>
+<li><strong>Exit</strong>: Terminal</li>
+<li><strong>Permissions</strong>: Verifier sets; or auto-set when verification disabled</li>
+<li><strong>Blocking</strong>: NO - counts as complete</li>
+</ul>
+<h3 id="59-recovery_pending">5.9 RECOVERY_PENDING<a class="headerlink" href="#59-recovery_pending" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Recovery system processing failure</li>
+<li><strong>Exit</strong>: Recovery complete → RETRY_PENDING</li>
+<li><strong>Permissions</strong>: Recovery component sets</li>
+<li><strong>Blocking</strong>: YES</li>
+</ul>
+<h3 id="510-retry_pending">5.10 RETRY_PENDING<a class="headerlink" href="#510-retry_pending" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Recovery ready for retry</li>
+<li><strong>Exit</strong>: Replanning complete → READY</li>
+<li><strong>Permissions</strong>: Recovery component sets</li>
+<li><strong>Blocking</strong>: YES</li>
+</ul>
+<h3 id="511-blocked">5.11 BLOCKED<a class="headerlink" href="#511-blocked" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Dependencies not satisfied</li>
+<li><strong>Exit</strong>: Dependencies satisfied → READY</li>
+<li><strong>Permissions</strong>: Planner sets</li>
+<li><strong>Blocking</strong>: YES</li>
+</ul>
+<h3 id="512-skipped">5.12 SKIPPED<a class="headerlink" href="#512-skipped" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Intentionally skipped (e.g., optional step)</li>
+<li><strong>Exit</strong>: Terminal</li>
+<li><strong>Permissions</strong>: Planner or recovery sets</li>
+<li><strong>Blocking</strong>: Depends on skip policy</li>
+</ul>
+<h3 id="513-failed">5.13 FAILED<a class="headerlink" href="#513-failed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Permanently failed (max retries, terminal error)</li>
+<li><strong>Exit</strong>: Terminal</li>
+<li><strong>Permissions</strong>: Recovery or system sets</li>
+<li><strong>Blocking</strong>: YES - prevents completion</li>
+</ul>
+<h3 id="514-cancelled">5.14 CANCELLED<a class="headerlink" href="#514-cancelled" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Entry</strong>: Cancelled by user or system</li>
+<li><strong>Exit</strong>: Terminal</li>
+<li><strong>Permissions</strong>: System sets</li>
+<li><strong>Blocking</strong>: YES</li>
+</ul>
+<h2 id="6-plan-progress-calculation">6. Plan Progress Calculation<a class="headerlink" href="#6-plan-progress-calculation" title="Permanent link">&para;</a></h2>
+<p>Plan progress counts ONLY steps in completion states:</p>
+<pre><code class="language-python">def get_progress(self) -&gt; float:
+    &quot;&quot;&quot;Calculate plan completion progress.&quot;&quot;&quot;
+    if not self.steps:
+        return 0.0
+
+    COMPLETION_STATES = {
+        StepStatus.VERIFIED_COMPLETED,
+        StepStatus.SKIPPED,  # If skip policy allows
+    }
+
+    completed = sum(1 for s in self.steps if s.status in COMPLETION_STATES)
+    return completed / len(self.steps)
+</code></pre>
+<p>Steps in these states do NOT count:
+- PENDING
+- READY
+- IN_PROGRESS
+- EXECUTED
+- EVALUATION_FAILED
+- EVALUATED (when verification required)
+- VERIFICATION_FAILED
+- RECOVERY_PENDING
+- RETRY_PENDING
+- BLOCKED
+- FAILED
+- CANCELLED</p>
+<h2 id="7-disabled-verification-policy">7. Disabled Verification Policy<a class="headerlink" href="#7-disabled-verification-policy" title="Permanent link">&para;</a></h2>
+<p>When <code>enable_verification=False</code>:</p>
+<pre><code class="language-python"># After EVALUATED, auto-promote to VERIFIED_COMPLETED
+if not self.config.enable_verification:
+    step.status = StepStatus.VERIFIED_COMPLETED
+    # Record unverified completion in trace
+    step.metadata['verification'] = 'disabled'
+</code></pre>
+<p>Result must indicate:</p>
+<pre><code class="language-python">result.verification_status = &quot;DISABLED&quot;
+# NOT claim independently verified completion
+</code></pre>
+<h2 id="8-required-tests">8. Required Tests<a class="headerlink" href="#8-required-tests" title="Permanent link">&para;</a></h2>
+<h3 id="81-actor-tests">8.1 Actor Tests<a class="headerlink" href="#81-actor-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Actor sets IN_PROGRESS when starting</li>
+<li>Actor sets EXECUTED when completing</li>
+<li>Actor cannot set EVALUATED</li>
+<li>Actor cannot set VERIFIED_COMPLETED</li>
+<li>Actor cannot complete step (EXECUTED ≠ complete)</li>
+</ul>
+<h3 id="82-evaluator-tests">8.2 Evaluator Tests<a class="headerlink" href="#82-evaluator-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Evaluator can set EVALUATED from EXECUTED</li>
+<li>Evaluator can set EVALUATION_FAILED from EXECUTED</li>
+<li>Evaluator cannot set VERIFIED_COMPLETED</li>
+<li>Evaluation failure blocks progress</li>
+<li>Evaluation pass allows progress (with verification disabled)</li>
+</ul>
+<h3 id="83-verifier-tests">8.3 Verifier Tests<a class="headerlink" href="#83-verifier-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Verifier can set VERIFIED_COMPLETED from EVALUATED</li>
+<li>Verifier can set VERIFICATION_FAILED from EVALUATED</li>
+<li>Verification failure blocks completion</li>
+<li>Verification pass enables completion</li>
+</ul>
+<h3 id="84-progress-tests">8.4 Progress Tests<a class="headerlink" href="#84-progress-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>EXECUTED steps don't count as complete</li>
+<li>EVALUATION_FAILED steps don't count as complete</li>
+<li>EVALUATED steps don't count (when verification required)</li>
+<li>VERIFICATION_FAILED steps don't count as complete</li>
+<li>VERIFIED_COMPLETED steps count as complete</li>
+<li>Progress calculation is accurate</li>
+</ul>
+<h3 id="85-recovery-tests">8.5 Recovery Tests<a class="headerlink" href="#85-recovery-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Failed steps remain available for recovery</li>
+<li>Recovery can reset to READY</li>
+<li>Completed unaffected steps remain after replanning</li>
+<li>RETRY_PENDING properly bridges to READY</li>
+</ul>
+<h2 id="9-implementation-changes">9. Implementation Changes<a class="headerlink" href="#9-implementation-changes" title="Permanent link">&para;</a></h2>
+<h3 id="91-typespy">9.1 types.py<a class="headerlink" href="#91-typespy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Add <code>StepStatus</code> enum</li>
+<li>Change <code>Step.status</code> from <code>str</code> to <code>StepStatus</code></li>
+<li>Add <code>Step.evaluation_passed: Optional[bool]</code></li>
+<li>Add <code>Step.verification_passed: Optional[bool]</code></li>
+</ul>
+<h3 id="92-corepy">9.2 core.py<a class="headerlink" href="#92-corepy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update <code>_execute_action()</code> to set <code>StepStatus.IN_PROGRESS</code> then <code>StepStatus.EXECUTED</code></li>
+<li>Update <code>_execute_evaluation()</code> to set <code>StepStatus.EVALUATED</code> or <code>StepStatus.EVALUATION_FAILED</code></li>
+<li>Update <code>_execute_verification()</code> to set <code>StepStatus.VERIFIED_COMPLETED</code> or <code>StepStatus.VERIFICATION_FAILED</code></li>
+<li>Update <code>Plan.get_progress()</code> to use completion states</li>
+<li>Update <code>_is_plan_complete()</code> to check for VERIFIED_COMPLETED</li>
+</ul>
+<h3 id="93-componentspy">9.3 components.py<a class="headerlink" href="#93-componentspy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Update all component interfaces to use <code>StepStatus</code></li>
+<li>Ensure components respect permission matrix</li>
+</ul>
+<h2 id="10-migration-from-string-statuses">10. Migration from String Statuses<a class="headerlink" href="#10-migration-from-string-statuses" title="Permanent link">&para;</a></h2>
+<p>Current string statuses:
+- <code>"pending"</code> → <code>StepStatus.PENDING</code>
+- <code>"in_progress"</code> → <code>StepStatus.IN_PROGRESS</code>
+- <code>"completed"</code> → <code>StepStatus.VERIFIED_COMPLETED</code> (when verified)
+- <code>"failed"</code> → <code>StepStatus.EVALUATION_FAILED</code> or <code>StepStatus.FAILED</code></p>
+<p>Migration:
+1. Replace all string comparisons with enum comparisons
+2. Update serialization to use enum values
+3. Add validation that only valid transitions occur</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

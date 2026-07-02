@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/STATE_MACHINE_SPECIFICATION/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>State machine - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../patterns/issue-triage/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../STEP_LIFECYCLE_SPECIFICATION/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/STATE_MACHINE_SPECIFICATION.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#state-machine-specification" class="nav-link">State Machine Specification</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#1-overview" class="nav-link">1. Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#2-state-definitions" class="nav-link">2. State Definitions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#3-normal-lifecycle" class="nav-link">3. Normal Lifecycle</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#4-transition-specification-table" class="nav-link">4. Transition Specification Table</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#5-terminal-state-immutability" class="nav-link">5. Terminal State Immutability</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#6-transition-validation" class="nav-link">6. Transition Validation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#7-iteration-boundary-logic" class="nav-link">7. Iteration Boundary Logic</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#8-test-requirements" class="nav-link">8. Test Requirements</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#9-implementation-notes" class="nav-link">9. Implementation Notes</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#10-acceptance-criteria" class="nav-link">10. Acceptance Criteria</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="state-machine-specification">State Machine Specification<a class="headerlink" href="#state-machine-specification" title="Permanent link">&para;</a></h1>
+<p><strong>Document Date</strong>: 2026-06-24
+<strong>Framework Version</strong>: 0.3.0
+<strong>Status</strong>: IMPLEMENTATION SPECIFICATION</p>
+<h2 id="1-overview">1. Overview<a class="headerlink" href="#1-overview" title="Permanent link">&para;</a></h2>
+<p>This document specifies the complete execution state machine for the Loop Engineering Framework, including explicit iteration lifecycle semantics, transition rules, and disabled-phase bypass paths.</p>
+<h2 id="2-state-definitions">2. State Definitions<a class="headerlink" href="#2-state-definitions" title="Permanent link">&para;</a></h2>
+<h3 id="21-active-states-non-terminal">2.1 Active States (Non-Terminal)<a class="headerlink" href="#21-active-states-non-terminal" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+<th>Entry Criteria</th>
+<th>Exit Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>INITIALIZED</code></td>
+<td>Engine created, ready to start</td>
+<td>Engine instantiation</td>
+<td>First iteration begins</td>
+</tr>
+<tr>
+<td><code>SPECIFYING</code></td>
+<td>Task specification phase</td>
+<td>Before planning</td>
+<td>Task understood, ready to plan</td>
+</tr>
+<tr>
+<td><code>PLANNING</code></td>
+<td>Creating or revising plan</td>
+<td>SPECIFYING or ITERATION_COMPLETE</td>
+<td>Plan created/revised</td>
+</tr>
+<tr>
+<td><code>ACTING</code></td>
+<td>Executing current step</td>
+<td>PLANNING</td>
+<td>Step execution complete</td>
+</tr>
+<tr>
+<td><code>OBSERVING</code></td>
+<td>Capturing execution results</td>
+<td>ACTING</td>
+<td>Observation recorded</td>
+</tr>
+<tr>
+<td><code>EVALUATING</code></td>
+<td>Assessing step quality</td>
+<td>OBSERVING</td>
+<td>Evaluation complete</td>
+</tr>
+<tr>
+<td><code>VERIFYING</code></td>
+<td>Independent verification</td>
+<td>EVALUATING</td>
+<td>Verification complete</td>
+</tr>
+<tr>
+<td><code>ITERATION_COMPLETE</code></td>
+<td>End of iteration boundary</td>
+<td>EVALUATING or VERIFYING</td>
+<td>Next state determined</td>
+</tr>
+<tr>
+<td><code>RECOVERING</code></td>
+<td>Handling failure</td>
+<td>EVALUATING or VERIFYING</td>
+<td>Recovery action complete</td>
+</tr>
+<tr>
+<td><code>REPLANNING</code></td>
+<td>Correcting plan after failure</td>
+<td>RECOVERING</td>
+<td>New plan ready</td>
+</tr>
+<tr>
+<td><code>WAITING_FOR_HUMAN</code></td>
+<td>Awaiting human input</td>
+<td>RECOVERING or policy trigger</td>
+<td>Human response received</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-terminal-states">2.2 Terminal States<a class="headerlink" href="#22-terminal-states" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+<th>When Reached</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>COMPLETED</code></td>
+<td>Successful termination</td>
+<td>All steps verified, goal achieved</td>
+</tr>
+<tr>
+<td><code>PARTIALLY_COMPLETED</code></td>
+<td>Partial success</td>
+<td>Required steps done, optional skipped</td>
+</tr>
+<tr>
+<td><code>ABSTAINED</code></td>
+<td>Intentional non-completion</td>
+<td>Policy decision to not complete</td>
+</tr>
+<tr>
+<td><code>BUDGET_EXHAUSTED</code></td>
+<td>Budget limit reached</td>
+<td>Steps/time/tokens exceeded</td>
+</tr>
+<tr>
+<td><code>POLICY_TERMINATED</code></td>
+<td>Policy violation</td>
+<td>Safety or policy termination</td>
+</tr>
+<tr>
+<td><code>FAILED</code></td>
+<td>Failure termination</td>
+<td>Unrecoverable error or max attempts</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-normal-lifecycle">3. Normal Lifecycle<a class="headerlink" href="#3-normal-lifecycle" title="Permanent link">&para;</a></h2>
+<pre><code>INITIALIZED
+    ↓
+SPECIFYING
+    ↓
+PLANNING
+    ↓
+ACTING
+    ↓
+OBSERVING
+    ↓
+EVALUATING
+    ↓
+VERIFYING
+    ↓
+ITERATION_COMPLETE
+</code></pre>
+<p>At <code>ITERATION_COMPLETE</code>, the runtime explicitly decides:</p>
+<pre><code>ITERATION_COMPLETE
+    ├──→ COMPLETED (all steps done)
+    ├──→ PLANNING (next iteration)
+    ├──→ REPLANNING (plan correction needed)
+    ├──→ RECOVERING (failure handling)
+    ├──→ WAITING_FOR_HUMAN (escalation)
+    ├──→ ABSTAINED (intentional stop)
+    ├──→ FAILED (unrecoverable)
+    └──→ BUDGET_EXHAUSTED (resource limit)
+</code></pre>
+<h2 id="4-transition-specification-table">4. Transition Specification Table<a class="headerlink" href="#4-transition-specification-table" title="Permanent link">&para;</a></h2>
+<h3 id="41-normal-path-transitions">4.1 Normal Path Transitions<a class="headerlink" href="#41-normal-path-transitions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Preconditions</th>
+<th>Trigger</th>
+<th>Side Effects</th>
+<th>Invalid Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INITIALIZED</td>
+<td>SPECIFYING</td>
+<td>Engine ready</td>
+<td>run() called</td>
+<td>state.initialized</td>
+<td>Raise if already started</td>
+</tr>
+<tr>
+<td>INITIALIZED</td>
+<td>FAILED</td>
+<td>Engine error</td>
+<td>Setup failure</td>
+<td>Log error</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SPECIFYING</td>
+<td>PLANNING</td>
+<td>Task understood</td>
+<td>Spec complete</td>
+<td>-</td>
+<td>Raise if no goal</td>
+</tr>
+<tr>
+<td>SPECIFYING</td>
+<td>FAILED</td>
+<td>Spec error</td>
+<td>Unparseable task</td>
+<td>Log error</td>
+<td>-</td>
+</tr>
+<tr>
+<td>PLANNING</td>
+<td>ACTING</td>
+<td>Plan exists</td>
+<td>Plan ready</td>
+<td>Increment plan version</td>
+<td>Raise if no steps</td>
+</tr>
+<tr>
+<td>PLANNING</td>
+<td>FAILED</td>
+<td>Plan error</td>
+<td>Unplannable</td>
+<td>Create failure</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ACTING</td>
+<td>OBSERVING</td>
+<td>Step executed</td>
+<td>Actor returned</td>
+<td>Step.status = EXECUTED</td>
+<td>Raise on exception</td>
+</tr>
+<tr>
+<td>ACTING</td>
+<td>RECOVERING</td>
+<td>Step failed</td>
+<td>Actor exception</td>
+<td>Create failure</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ACTING</td>
+<td>FAILED</td>
+<td>Critical error</td>
+<td>Unrecoverable</td>
+<td>Create failure</td>
+<td>-</td>
+</tr>
+<tr>
+<td>OBSERVING</td>
+<td>EVALUATING</td>
+<td>Observation recorded</td>
+<td>Observer done</td>
+<td>-</td>
+<td>Raise if no observation</td>
+</tr>
+<tr>
+<td>EVALUATING</td>
+<td>VERIFYING</td>
+<td>Evaluation passed</td>
+<td>passed=True</td>
+<td>Step.status = EVALUATED</td>
+<td>-</td>
+</tr>
+<tr>
+<td>EVALUATING</td>
+<td>RECOVERING</td>
+<td>Evaluation failed</td>
+<td>passed=False</td>
+<td>Step.status = EVALUATION_FAILED</td>
+<td>-</td>
+</tr>
+<tr>
+<td>EVALUATING</td>
+<td>REPLANNING</td>
+<td>Evaluation requires change</td>
+<td>Needs replan</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>VERIFYING</td>
+<td>ITERATION_COMPLETE</td>
+<td>Verification passed</td>
+<td>verified=True</td>
+<td>Step.status = VERIFIED_COMPLETED</td>
+<td>-</td>
+</tr>
+<tr>
+<td>VERIFYING</td>
+<td>RECOVERING</td>
+<td>Verification failed</td>
+<td>verified=False</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITERATION_COMPLETE</td>
+<td>PLANNING</td>
+<td>More steps pending</td>
+<td>has_next_step=True</td>
+<td>Increment iteration</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITERATION_COMPLETE</td>
+<td>COMPLETED</td>
+<td>All steps verified</td>
+<td>plan.complete=True</td>
+<td>Finalize result</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITERATION_COMPLETE</td>
+<td>REPLANNING</td>
+<td>Plan needs update</td>
+<td>plan.stale=True</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITERATION_COMPLETE</td>
+<td>RECOVERING</td>
+<td>Failure pending</td>
+<td>has_unhandled_failure=True</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITERATION_COMPLETE</td>
+<td>BUDGET_EXHAUSTED</td>
+<td>Budget check</td>
+<td>budget.exhausted=True</td>
+<td>Set terminal</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ITERATION_COMPLETE</td>
+<td>FAILED</td>
+<td>Unrecoverable</td>
+<td>terminal_failure=True</td>
+<td>Set terminal</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-recovery-path-transitions">4.2 Recovery Path Transitions<a class="headerlink" href="#42-recovery-path-transitions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Preconditions</th>
+<th>Trigger</th>
+<th>Side Effects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RECOVERING</td>
+<td>REPLANNING</td>
+<td>Recovery = replan</td>
+<td>Strategy selected</td>
+<td>Preserve evidence</td>
+</tr>
+<tr>
+<td>RECOVERING</td>
+<td>ITERATION_COMPLETE</td>
+<td>Recovery = retry succeeded</td>
+<td>Step ready</td>
+<td>Step.status = RETRY_PENDING → READY</td>
+</tr>
+<tr>
+<td>RECOVERING</td>
+<td>WAITING_FOR_HUMAN</td>
+<td>Recovery = escalate</td>
+<td>Human needed</td>
+<td>-</td>
+</tr>
+<tr>
+<td>RECOVERING</td>
+<td>FAILED</td>
+<td>Recovery failed</td>
+<td>Max attempts reached</td>
+<td>Mark terminal</td>
+</tr>
+<tr>
+<td>REPLANNING</td>
+<td>PLANNING</td>
+<td>New plan ready</td>
+<td>Plan revised</td>
+<td>Keep completed steps</td>
+</tr>
+<tr>
+<td>REPLANNING</td>
+<td>FAILED</td>
+<td>Replan failed</td>
+<td>Cannot replan</td>
+<td>Create failure</td>
+</tr>
+<tr>
+<td>WAITING_FOR_HUMAN</td>
+<td>RECOVERING</td>
+<td>Human responded</td>
+<td>Continue recovery</td>
+<td>-</td>
+</tr>
+<tr>
+<td>WAITING_FOR_HUMAN</td>
+<td>REPLANNING</td>
+<td>Human instructed replan</td>
+<td>Follow instruction</td>
+<td>-</td>
+</tr>
+<tr>
+<td>WAITING_FOR_HUMAN</td>
+<td>FAILED</td>
+<td>Human aborted</td>
+<td>Abort requested</td>
+<td>Set terminal</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-disabled-phase-bypass-transitions">4.3 Disabled Phase Bypass Transitions<a class="headerlink" href="#43-disabled-phase-bypass-transitions" title="Permanent link">&para;</a></h3>
+<p>When <code>enable_observer=False</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Preconditions</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACTING</td>
+<td>EVALUATING</td>
+<td>Observer disabled</td>
+<td>Skip observation</td>
+</tr>
+</tbody>
+</table>
+<p>When <code>enable_evaluator=False</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Preconditions</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OBSERVING</td>
+<td>ITERATION_COMPLETE</td>
+<td>Evaluator disabled</td>
+<td>Direct to boundary</td>
+</tr>
+<tr>
+<td>ACTING</td>
+<td>ITERATION_COMPLETE</td>
+<td>Both disabled</td>
+<td>Direct to boundary</td>
+</tr>
+</tbody>
+</table>
+<p>When <code>enable_verification=False</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Preconditions</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EVALUATING</td>
+<td>ITERATION_COMPLETE</td>
+<td>Verifier disabled</td>
+<td>Evaluation sufficient</td>
+</tr>
+</tbody>
+</table>
+<p>When <code>enable_planner=False</code> (fixed plan):</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Preconditions</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPECIFYING</td>
+<td>ACTING</td>
+<td>Planner disabled</td>
+<td>Execute fixed plan</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-terminal-state-immutability">5. Terminal State Immutability<a class="headerlink" href="#5-terminal-state-immutability" title="Permanent link">&para;</a></h2>
+<p>Terminal states have no valid outgoing transitions:</p>
+<pre><code class="language-python">_VALID_TRANSITIONS = {
+    ExecutionState.COMPLETED: set(),
+    ExecutionState.PARTIALLY_COMPLETED: set(),
+    ExecutionState.ABSTAINED: set(),
+    ExecutionState.BUDGET_EXHAUSTED: set(),
+    ExecutionState.POLICY_TERMINATED: set(),
+    ExecutionState.FAILED: set(),
+}
+</code></pre>
+<p>Any attempt to transition from a terminal state raises:</p>
+<pre><code>RuntimeError: Invalid state transition: {terminal} -&gt; {target}.
+Terminal states cannot transition.
+</code></pre>
+<h2 id="6-transition-validation">6. Transition Validation<a class="headerlink" href="#6-transition-validation" title="Permanent link">&para;</a></h2>
+<p>All transitions must pass validation:</p>
+<pre><code class="language-python">def _transition_to(self, new_state: ExecutionState) -&gt; None:
+    if self.state is None:
+        raise RuntimeError(&quot;Cannot transition: state is None&quot;)
+
+    current_state = self.state.execution_state
+
+    # Terminal check
+    if current_state in TERMINAL_STATES:
+        raise RuntimeError(
+            f&quot;Cannot transition from terminal state {current_state.value}&quot;
+        )
+
+    # Valid transition check
+    valid_next_states = self._VALID_TRANSITIONS.get(current_state, set())
+    if new_state not in valid_next_states:
+        raise RuntimeError(
+            f&quot;Invalid state transition: {current_state.value} -&gt; {new_state.value}. &quot;
+            f&quot;Valid transitions: {[s.value for s in valid_next_states]}&quot;
+        )
+
+    # Log transition
+    if self.config.verbose:
+        logger.info(f&quot;State transition: {current_state.value} -&gt; {new_state.value}&quot;)
+
+    self.state.execution_state = new_state
+</code></pre>
+<h2 id="7-iteration-boundary-logic">7. Iteration Boundary Logic<a class="headerlink" href="#7-iteration-boundary-logic" title="Permanent link">&para;</a></h2>
+<p>The <code>ITERATION_COMPLETE</code> state serves as an explicit boundary between iterations.</p>
+<h3 id="71-boundary-decision-logic">7.1 Boundary Decision Logic<a class="headerlink" href="#71-boundary-decision-logic" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">async def _handle_iteration_complete(self, context: LoopContext) -&gt; ExecutionState:
+    &quot;&quot;&quot;
+    Decide next state at iteration boundary.
+    Returns the state to transition to.
+    &quot;&quot;&quot;
+    # 1. Check budget
+    if self.budget and not self.budget.check_budget():
+        return ExecutionState.BUDGET_EXHAUSTED
+
+    # 2. Check for terminal failures
+    if any(f.status == FailureStatus.TERMINAL for f in self.state.failures):
+        return ExecutionState.FAILED
+
+    # 3. Check for unhandled failures requiring recovery
+    unhandled_failures = [
+        f for f in self.state.failures
+        if f.status == FailureStatus.UNHANDLED
+    ]
+    if unhandled_failures:
+        return ExecutionState.RECOVERING
+
+    # 4. Check if plan is complete
+    if self.state.current_plan and self.state.current_plan.is_complete():
+        # Verify all required steps passed
+        if self._all_steps_verified():
+            return ExecutionState.COMPLETED
+        else:
+            return ExecutionState.FAILED
+
+    # 5. Continue to next iteration
+    return ExecutionState.PLANNING
+</code></pre>
+<h3 id="72-main-loop-structure">7.2 Main Loop Structure<a class="headerlink" href="#72-main-loop-structure" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">async def run(self, context: LoopContext) -&gt; LoopResult:
+    self.state = LoopState(execution_state=ExecutionState.INITIALIZED)
+
+    try:
+        while True:
+            # Execute one iteration
+            await self._execute_iteration(context)
+
+            # At ITERATION_COMPLETE, decide next state
+            next_state = await self._handle_iteration_complete(context)
+
+            if next_state in TERMINAL_STATES:
+                self._transition_to(next_state)
+                break
+            elif next_state == ExecutionState.PLANNING:
+                self._transition_to(ExecutionState.PLANNING)
+                # Continue loop
+            elif next_state == ExecutionState.RECOVERING:
+                await self._execute_recovery(context)
+                # Recovery will transition to appropriate state
+            # ... etc
+
+    except Exception as e:
+        self._handle_exception(e)
+
+    return self._build_result()
+</code></pre>
+<h2 id="8-test-requirements">8. Test Requirements<a class="headerlink" href="#8-test-requirements" title="Permanent link">&para;</a></h2>
+<h3 id="81-valid-transition-tests">8.1 Valid Transition Tests<a class="headerlink" href="#81-valid-transition-tests" title="Permanent link">&para;</a></h3>
+<p>For every transition in <code>_VALID_TRANSITIONS</code>:
+- Test that transition succeeds when preconditions met
+- Test that resulting state is correct
+- Test that side effects occur</p>
+<h3 id="82-invalid-transition-tests">8.2 Invalid Transition Tests<a class="headerlink" href="#82-invalid-transition-tests" title="Permanent link">&para;</a></h3>
+<p>For representative invalid transitions:
+- <code>COMPLETED -&gt; PLANNING</code>
+- <code>FAILED -&gt; ACTING</code>
+- <code>EVALUATING -&gt; PLANNING</code> (direct - should go through ITERATION_COMPLETE)
+- <code>INITIALIZED -&gt; COMPLETED</code></p>
+<h3 id="83-disabled-phase-tests">8.3 Disabled Phase Tests<a class="headerlink" href="#83-disabled-phase-tests" title="Permanent link">&para;</a></h3>
+<p>For each <code>enable_*=False</code>:
+- Observer disabled: Verify <code>ACTING -&gt; EVALUATING</code> path
+- Evaluator disabled: Verify <code>OBSERVING -&gt; ITERATION_COMPLETE</code> path
+- Verifier disabled: Verify <code>EVALUATING -&gt; ITERATION_COMPLETE</code> path</p>
+<h3 id="84-iteration-boundary-tests">8.4 Iteration Boundary Tests<a class="headerlink" href="#84-iteration-boundary-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Two consecutive iterations complete successfully</li>
+<li>Three consecutive iterations complete successfully</li>
+<li>Iteration boundary correctly counts iterations</li>
+<li>Iteration boundary respects budget</li>
+<li>Iteration boundary detects completion</li>
+</ul>
+<h2 id="9-implementation-notes">9. Implementation Notes<a class="headerlink" href="#9-implementation-notes" title="Permanent link">&para;</a></h2>
+<h3 id="91-required-code-changes">9.1 Required Code Changes<a class="headerlink" href="#91-required-code-changes" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>types.py</strong>:</li>
+<li>Add <code>ITERATION_COMPLETE</code> to <code>ExecutionState</code></li>
+<li>
+<p>Verify all states from section 2 are present</p>
+</li>
+<li>
+<p><strong>core.py</strong>:</p>
+</li>
+<li>Update <code>_VALID_TRANSITIONS</code> with complete table</li>
+<li>Add <code>_handle_iteration_complete()</code> method</li>
+<li>Modify <code>run()</code> to use iteration boundary logic</li>
+<li>Add bypass logic for disabled phases</li>
+<li>
+<p>Update <code>_transition_to()</code> for terminal state check</p>
+</li>
+<li>
+<p><strong>tests/</strong>:</p>
+</li>
+<li>Add <code>test_state_transitions.py</code> with all valid transitions</li>
+<li>Add <code>test_invalid_transitions.py</code> with invalid cases</li>
+<li>Add <code>test_iteration_boundary.py</code> with boundary tests</li>
+<li>Add <code>test_disabled_phases.py</code> with bypass tests</li>
+</ol>
+<h3 id="92-migration-from-current-implementation">9.2 Migration from Current Implementation<a class="headerlink" href="#92-migration-from-current-implementation" title="Permanent link">&para;</a></h3>
+<p>Current problematic transitions:
+- <code>EVALUATING -&gt; PLANNING</code> (invalid, causes crash)</p>
+<p>New correct path:
+- <code>EVALUATING -&gt; ITERATION_COMPLETE -&gt; PLANNING</code></p>
+<p>Migration:
+1. Replace direct iteration loop with boundary-based loop
+2. Insert <code>ITERATION_COMPLETE</code> transition at end of <code>_execute_iteration()</code>
+3. Add boundary decision logic
+4. Update transition table</p>
+<h2 id="10-acceptance-criteria">10. Acceptance Criteria<a class="headerlink" href="#10-acceptance-criteria" title="Permanent link">&para;</a></h2>
+<p>The state machine implementation is complete when:</p>
+<ul>
+<li>[ ] All states from section 2 are defined</li>
+<li>[ ] All transitions from section 4 are implemented</li>
+<li>[ ] Terminal states are immutable</li>
+<li>[ ] Invalid transitions raise <code>RuntimeError</code></li>
+<li>[ ] Two consecutive iterations work</li>
+<li>[ ] Three consecutive iterations work</li>
+<li>[ ] Disabled phases have valid bypass paths</li>
+<li>[ ] Iteration count is accurate</li>
+<li>[ ] Boundary decision logic respects budget</li>
+<li>[ ] All tests pass</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

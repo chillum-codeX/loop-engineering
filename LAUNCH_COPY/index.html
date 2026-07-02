@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/LAUNCH_COPY/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Launch Copy Pack - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/LAUNCH_COPY.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#launch-copy-pack" class="nav-link">Launch Copy Pack</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#canonical-links" class="nav-link">Canonical links</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#short-one-line-description" class="nav-link">Short one-line description</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#github-discussion-repo-announcement" class="nav-link">GitHub Discussion / repo announcement</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#x-twitter" class="nav-link">X / Twitter</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#hacker-news" class="nav-link">Hacker News</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#reddit" class="nav-link">Reddit</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="launch-copy-pack">Launch Copy Pack<a class="headerlink" href="#launch-copy-pack" title="Permanent link">&para;</a></h1>
+<p>Use this file as the copy bank for public launch posts.</p>
+<h2 id="canonical-links">Canonical links<a class="headerlink" href="#canonical-links" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Repo: https://github.com/chillum-codeX/loop-engineering</li>
+<li>Release: https://github.com/chillum-codeX/loop-engineering/releases/tag/v0.4.1</li>
+<li>Discussions: https://github.com/chillum-codeX/loop-engineering/discussions</li>
+</ul>
+<h2 id="short-one-line-description">Short one-line description<a class="headerlink" href="#short-one-line-description" title="Permanent link">&para;</a></h2>
+<p>Loop Engineering is a Python runtime for agent loops with budgets, deterministic gates, recovery, checkpoints, and persistence.</p>
+<h2 id="github-discussion-repo-announcement">GitHub Discussion / repo announcement<a class="headerlink" href="#github-discussion-repo-announcement" title="Permanent link">&para;</a></h2>
+<p>Loop Engineering v0.4.1 is live.</p>
+<p>What is in the repo now:</p>
+<ul>
+<li>Working Python runtime for loop engineering</li>
+<li>CLI for <code>init</code>, <code>audit</code>, <code>run</code>, <code>cost</code>, and <code>validate</code></li>
+<li>Deterministic gates before model calls</li>
+<li>Budget enforcement and recovery handlers</li>
+<li>Human checkpoints and JSON/SQLite persistence</li>
+<li>Docker, GitHub Actions, starter patterns, and community files</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>97 tests passing locally</li>
+<li>Build passing</li>
+<li>Release artifacts validated</li>
+<li>GitHub Actions green on <code>main</code></li>
+</ul>
+<p>If you want to try it, start with the README and <code>docs/QUICKSTART.md</code>.</p>
+<h2 id="x-twitter">X / Twitter<a class="headerlink" href="#x-twitter" title="Permanent link">&para;</a></h2>
+<p>Shipping today: Loop Engineering v0.4.1</p>
+<p>A Python runtime for building agent loops with:
+- budgets
+- deterministic gates
+- checkpoints
+- recovery
+- persistence</p>
+<p>Repo: https://github.com/chillum-codeX/loop-engineering</p>
+<h2 id="hacker-news">Hacker News<a class="headerlink" href="#hacker-news" title="Permanent link">&para;</a></h2>
+<p>Title:</p>
+<p>Show HN: Loop Engineering — a Python runtime for budgeted, verifiable agent loops</p>
+<p>Body:</p>
+<p>I built Loop Engineering to make autonomous agent loops more controlled and inspectable.</p>
+<p>The current release includes a Python runtime, CLI, deterministic gates before LLM calls, budget enforcement, human checkpoints, recovery handlers, and JSON/SQLite persistence.</p>
+<p>Current validation status:</p>
+<ul>
+<li>97 tests passing</li>
+<li>packaging and release artifacts validated</li>
+<li>GitHub Actions green on main</li>
+</ul>
+<p>Repo: https://github.com/chillum-codeX/loop-engineering</p>
+<p>I would especially love feedback on the runtime model, the CLI, and which production loop patterns are most useful.</p>
+<h2 id="reddit">Reddit<a class="headerlink" href="#reddit" title="Permanent link">&para;</a></h2>
+<p>Title:</p>
+<p>I open-sourced a Python runtime for safer agent loops</p>
+<p>Body:</p>
+<p>I just published Loop Engineering, a Python runtime for agent loops with deterministic gates, budget limits, recovery handlers, checkpoints, and persistence.</p>
+<p>It is meant for people experimenting with autonomous agent workflows who want more structure than prompt-only patterns.</p>
+<p>Repo: https://github.com/chillum-codeX/loop-engineering</p>
+<p>If you try it, I’d love feedback on missing patterns, rough edges in the CLI, and the benchmark design.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

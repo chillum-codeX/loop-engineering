@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/RUNTIME_SEMANTICS_BASELINE/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Runtime Semantics Baseline - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/RUNTIME_SEMANTICS_BASELINE.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#runtime-semantics-baseline" class="nav-link">Runtime Semantics Baseline</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#summary" class="nav-link">Summary</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-1-two-step-task-fails-on-second-iteration" class="nav-link">Defect #1: Two-Step Task Fails on Second Iteration</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-2-evaluating-planning-transition-missing" class="nav-link">Defect #2: EVALUATING -&gt; PLANNING Transition Missing</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-3-observing-planning-missing-disabled-evaluator-path" class="nav-link">Defect #3: OBSERVING -&gt; PLANNING Missing (Disabled Evaluator Path)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-4-evaluator-rejection-doesnt-block-completion" class="nav-link">Defect #4: Evaluator Rejection Doesn't Block Completion</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-5-recovery-strategy-not-actually-executed" class="nav-link">Defect #5: Recovery Strategy Not Actually Executed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-6-recovery-may-leave-runtime-in-invalid-state" class="nav-link">Defect #6: Recovery May Leave Runtime in Invalid State</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-7-max_recovery_attempts-not-propagated-from-loopconfig" class="nav-link">Defect #7: max_recovery_attempts Not Propagated from LoopConfig</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-8-runtime-exceptions-lost-in-final-result" class="nav-link">Defect #8: Runtime Exceptions Lost in Final Result</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-9-incorrect-iteration-count-on-failed-execution" class="nav-link">Defect #9: Incorrect Iteration Count on Failed Execution</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-10-benchmark-efficiency-credit-for-incorrect-output" class="nav-link">Defect #10: Benchmark Efficiency Credit for Incorrect Output</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-11-missing-pyprojecttoml-for-editable-installation" class="nav-link">Defect #11: Missing pyproject.toml for Editable Installation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-12-tests-use-syspath-manipulation" class="nav-link">Defect #12: Tests Use sys.path Manipulation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-13-absolute-machine-specific-paths-in-codebase" class="nav-link">Defect #13: Absolute Machine-Specific Paths in Codebase</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#defect-14-feature-flags-not-affecting-runtime-behavior" class="nav-link">Defect #14: Feature Flags Not Affecting Runtime Behavior</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#summary-table" class="nav-link">Summary Table</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#next-steps" class="nav-link">Next Steps</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="runtime-semantics-baseline">Runtime Semantics Baseline<a class="headerlink" href="#runtime-semantics-baseline" title="Permanent link">&para;</a></h1>
+<p><strong>Document Date</strong>: 2026-06-24
+<strong>Framework Version</strong>: 0.2.0
+<strong>Repository</strong>: /home/novix/workspace/project</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This document documents all defects reproduced in the current Loop Engineering runtime. Each defect includes reproduction commands, actual output, expected output, root cause, severity, and planned correction.</p>
+<hr />
+<h2 id="defect-1-two-step-task-fails-on-second-iteration">Defect #1: Two-Step Task Fails on Second Iteration<a class="headerlink" href="#defect-1-two-step-task-fails-on-second-iteration" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: CRITICAL</p>
+<h3 id="reproduction-command">Reproduction Command<a class="headerlink" href="#reproduction-command" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">python reproduce_defects.py
+# Or manually run a loop with max_iterations &gt;= 2
+</code></pre>
+<h3 id="actual-output">Actual Output<a class="headerlink" href="#actual-output" title="Permanent link">&para;</a></h3>
+<pre><code>INFO:loop_engine.core:=== Iteration 1 ===
+INFO:loop_engine.core:State transition: initialized -&gt; planning
+INFO:loop_engine.core:Created plan with 4 steps
+INFO:loop_engine.core:State transition: planning -&gt; acting
+INFO:loop_engine.core:Executed step step_0: Analyze the problem...
+INFO:loop_engine.core:State transition: acting -&gt; observing
+INFO:loop_engine.core:State transition: observing -&gt; evaluating
+INFO:loop_engine.core:Evaluation: score=0.00, passed=False
+INFO:loop_engine.core:=== Iteration 2 ===
+ERROR:loop_engine.core:Loop execution failed: Invalid state transition: evaluating -&gt; planning
+Result status: LoopStatus.FAILED
+Iterations: 0
+</code></pre>
+<h3 id="expected-output">Expected Output<a class="headerlink" href="#expected-output" title="Permanent link">&para;</a></h3>
+<pre><code>INFO:loop_engine.core:=== Iteration 1 ===
+INFO:loop_engine.core:State transition: initialized -&gt; planning
+...
+INFO:loop_engine.core:=== Iteration 2 ===
+INFO:loop_engine.core:State transition: iteration_complete -&gt; planning
+...
+Result status: LoopStatus.COMPLETED (or appropriate terminal status)
+Iterations: 2 (or actual number executed)
+</code></pre>
+<h3 id="root-cause">Root Cause<a class="headerlink" href="#root-cause" title="Permanent link">&para;</a></h3>
+<p>The state machine does not support repeated iterations. The transition <code>EVALUATING -&gt; PLANNING</code> is not valid because there is no <code>ITERATION_COMPLETE</code> state to bridge iterations. The engine attempts to go directly from the evaluation phase of iteration N to the planning phase of iteration N+1, which is not a valid transition.</p>
+<h3 id="root-cause-file">Root-Cause File<a class="headerlink" href="#root-cause-file" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>_VALID_TRANSITIONS</code> dictionary and <code>_execute_iteration()</code> method</p>
+<h3 id="planned-correction">Planned Correction<a class="headerlink" href="#planned-correction" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Add <code>ITERATION_COMPLETE</code> state to <code>ExecutionState</code> enum</li>
+<li>Add valid transition: <code>EVALUATING -&gt; ITERATION_COMPLETE</code></li>
+<li>Add valid transition: <code>ITERATION_COMPLETE -&gt; PLANNING</code></li>
+<li>Modify <code>_execute_iteration()</code> to transition to <code>ITERATION_COMPLETE</code> at end of iteration</li>
+<li>Add iteration boundary logic that decides next state based on plan progress</li>
+</ol>
+<hr />
+<h2 id="defect-2-evaluating-planning-transition-missing">Defect #2: EVALUATING -&gt; PLANNING Transition Missing<a class="headerlink" href="#defect-2-evaluating-planning-transition-missing" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: CRITICAL</p>
+<h3 id="reproduction-command_1">Reproduction Command<a class="headerlink" href="#reproduction-command_1" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">engine = LoopEngine(LoopConfig())
+engine.state = type('State', (), {'execution_state': ExecutionState.EVALUATING})()
+engine._transition_to(ExecutionState.PLANNING)  # Raises RuntimeError
+</code></pre>
+<h3 id="actual-output_1">Actual Output<a class="headerlink" href="#actual-output_1" title="Permanent link">&para;</a></h3>
+<pre><code>RuntimeError: Invalid state transition: evaluating -&gt; planning.
+Valid transitions from evaluating: ['failed', 'verifying', 'recovering', 'completed', 'replanning']
+</code></pre>
+<h3 id="expected-output_1">Expected Output<a class="headerlink" href="#expected-output_1" title="Permanent link">&para;</a></h3>
+<p>Transition should succeed via intermediate state or direct path for iteration continuation.</p>
+<h3 id="root-cause_1">Root Cause<a class="headerlink" href="#root-cause_1" title="Permanent link">&para;</a></h3>
+<p>No <code>ITERATION_COMPLETE</code> state exists to serve as a bridge between iterations. The transition table correctly excludes <code>EVALUATING -&gt; PLANNING</code> (which would skip verification and iteration boundary logic), but there's no alternative path for continuing to the next iteration.</p>
+<h3 id="root-cause-file_1">Root-Cause File<a class="headerlink" href="#root-cause-file_1" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>_VALID_TRANSITIONS</code> dictionary</p>
+<h3 id="planned-correction_1">Planned Correction<a class="headerlink" href="#planned-correction_1" title="Permanent link">&para;</a></h3>
+<p>Same as Defect #1: Add <code>ITERATION_COMPLETE</code> state with proper transition paths.</p>
+<hr />
+<h2 id="defect-3-observing-planning-missing-disabled-evaluator-path">Defect #3: OBSERVING -&gt; PLANNING Missing (Disabled Evaluator Path)<a class="headerlink" href="#defect-3-observing-planning-missing-disabled-evaluator-path" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: HIGH</p>
+<h3 id="reproduction-command_2">Reproduction Command<a class="headerlink" href="#reproduction-command_2" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">engine = LoopEngine(LoopConfig(enable_evaluator=False))
+# Check valid transitions from OBSERVING
+valid = engine._VALID_TRANSITIONS[ExecutionState.OBSERVING]
+# Result: {'failed', 'recovering', 'evaluating'}
+</code></pre>
+<h3 id="actual-output_2">Actual Output<a class="headerlink" href="#actual-output_2" title="Permanent link">&para;</a></h3>
+<p>Valid transitions from OBSERVING: <code>['failed', 'recovering', 'evaluating']</code></p>
+<h3 id="expected-output_2">Expected Output<a class="headerlink" href="#expected-output_2" title="Permanent link">&para;</a></h3>
+<p>When evaluator is disabled, should have path: <code>OBSERVING -&gt; ITERATION_COMPLETE</code></p>
+<h3 id="root-cause_2">Root Cause<a class="headerlink" href="#root-cause_2" title="Permanent link">&para;</a></h3>
+<p>No bypass path exists for disabled phases. When <code>enable_evaluator=False</code>, the code still attempts to transition through EVALUATING or needs a direct path to ITERATION_COMPLETE, but neither exists.</p>
+<h3 id="root-cause-file_2">Root-Cause File<a class="headerlink" href="#root-cause-file_2" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>_VALID_TRANSITIONS</code> and <code>_execute_iteration()</code></p>
+<h3 id="planned-correction_2">Planned Correction<a class="headerlink" href="#planned-correction_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Add <code>OBSERVING -&gt; ITERATION_COMPLETE</code> transition</li>
+<li>In <code>_execute_iteration()</code>, when evaluator is disabled, transition directly from OBSERVING to ITERATION_COMPLETE</li>
+<li>Similarly for other disabled phases (verifier, observer)</li>
+</ol>
+<hr />
+<h2 id="defect-4-evaluator-rejection-doesnt-block-completion">Defect #4: Evaluator Rejection Doesn't Block Completion<a class="headerlink" href="#defect-4-evaluator-rejection-doesnt-block-completion" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: CRITICAL</p>
+<h3 id="reproduction-command_3">Reproduction Command<a class="headerlink" href="#reproduction-command_3" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">class AlwaysRejectEvaluator:
+    async def evaluate(self, plan, observations, goal, context):
+        return Evaluation(score=0.0, passed=False, feedback=&quot;Rejected&quot;)
+
+engine.register_component(ComponentType.EVALUATOR, AlwaysRejectEvaluator())
+result = await engine.run(context)
+</code></pre>
+<h3 id="actual-output_3">Actual Output<a class="headerlink" href="#actual-output_3" title="Permanent link">&para;</a></h3>
+<p>Currently masked by Defect #1 (transition error causes FAIL), but the underlying logic issue exists.</p>
+<h3 id="expected-output_3">Expected Output<a class="headerlink" href="#expected-output_3" title="Permanent link">&para;</a></h3>
+<pre><code>Result status: FAILED (or RECOVERING if recovery available)
+</code></pre>
+<h3 id="root-cause_3">Root Cause<a class="headerlink" href="#root-cause_3" title="Permanent link">&para;</a></h3>
+<p>The engine's <code>_determine_final_status()</code> method checks plan progress (<code>get_progress() &gt;= 1.0</code>) but does not verify that all steps passed evaluation. A step can be marked "completed" by the actor without evaluator approval.</p>
+<h3 id="root-cause-file_3">Root-Cause File<a class="headerlink" href="#root-cause-file_3" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>_determine_final_status()</code> method</p>
+<h3 id="planned-correction_3">Planned Correction<a class="headerlink" href="#planned-correction_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Implement StepStatus enum with EVALUATED and VERIFIED_COMPLETED states</li>
+<li>Only count steps as complete when they reach VERIFIED_COMPLETED (or EVALUATED if verification disabled)</li>
+<li>Modify <code>_determine_final_status()</code> to check for any EVALUATION_FAILED steps</li>
+<li>Ensure evaluation failure triggers recovery or failure status</li>
+</ol>
+<hr />
+<h2 id="defect-5-recovery-strategy-not-actually-executed">Defect #5: Recovery Strategy Not Actually Executed<a class="headerlink" href="#defect-5-recovery-strategy-not-actually-executed" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: CRITICAL</p>
+<h3 id="reproduction-command_4">Reproduction Command<a class="headerlink" href="#reproduction-command_4" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">engine.register_component(ComponentType.RECOVERY, AdaptiveRecovery())
+result = await engine.run(context)
+print(f&quot;Recoveries: {len(result.recoveries)}&quot;)
+for r in result.recoveries:
+    print(f&quot;  executed={getattr(r, 'executed', 'N/A')}&quot;)
+</code></pre>
+<h3 id="actual-output_4">Actual Output<a class="headerlink" href="#actual-output_4" title="Permanent link">&para;</a></h3>
+<pre><code>Recoveries: 0
+# Or if recovery is triggered:
+Recovery action created but no state changes observed
+</code></pre>
+<h3 id="expected-output_4">Expected Output<a class="headerlink" href="#expected-output_4" title="Permanent link">&para;</a></h3>
+<pre><code>Recoveries: 1
+  executed=True
+  failure_id=linked_to_failure
+  # Observable state change (step status changed, plan modified, etc.)
+</code></pre>
+<h3 id="root-cause_4">Root Cause<a class="headerlink" href="#root-cause_4" title="Permanent link">&para;</a></h3>
+<p>Recovery only creates a <code>RecoveryAction</code> object but does not execute strategy handlers. There's no code that actually performs the recovery operation (e.g., marking step for retry, replanning, rollback).</p>
+<h3 id="root-cause-file_4">Root-Cause File<a class="headerlink" href="#root-cause-file_4" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>_execute_recovery()</code> method
+<code>loop_engine/components.py</code> - Recovery strategy implementations</p>
+<h3 id="planned-correction_4">Planned Correction<a class="headerlink" href="#planned-correction_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Define recovery strategy handlers (RETRY, REPLAN_STEP, ROLLBACK, etc.)</li>
+<li>Each handler performs actual state changes</li>
+<li><code>_execute_recovery()</code> calls appropriate handler after selecting strategy</li>
+<li>Verify post-conditions after recovery execution</li>
+<li>Mark recovery action as executed only after successful handler completion</li>
+</ol>
+<hr />
+<h2 id="defect-6-recovery-may-leave-runtime-in-invalid-state">Defect #6: Recovery May Leave Runtime in Invalid State<a class="headerlink" href="#defect-6-recovery-may-leave-runtime-in-invalid-state" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: HIGH</p>
+<h3 id="reproduction-command_5">Reproduction Command<a class="headerlink" href="#reproduction-command_5" title="Permanent link">&para;</a></h3>
+<p>N/A - Requires working recovery (blocked by Defect #5)</p>
+<h3 id="actual-output_5">Actual Output<a class="headerlink" href="#actual-output_5" title="Permanent link">&para;</a></h3>
+<p>Recovery may transition to states that don't have valid next transitions.</p>
+<h3 id="expected-output_5">Expected Output<a class="headerlink" href="#expected-output_5" title="Permanent link">&para;</a></h3>
+<p>Recovery always transitions to a state with valid continuation path.</p>
+<h3 id="root-cause_5">Root Cause<a class="headerlink" href="#root-cause_5" title="Permanent link">&para;</a></h3>
+<p>No validation that recovery produces valid post-conditions or transitions to a valid next state.</p>
+<h3 id="root-cause-file_5">Root-Cause File<a class="headerlink" href="#root-cause-file_5" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>_execute_recovery()</code> method</p>
+<h3 id="planned-correction_5">Planned Correction<a class="headerlink" href="#planned-correction_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Define valid post-recovery states (REPLANNING, ITERATION_COMPLETE, FAILED, WAITING_FOR_HUMAN)</li>
+<li>After recovery execution, explicitly transition to one of these states</li>
+<li>Validate that the resulting state has valid outgoing transitions</li>
+<li>Document recovery outcome state in trace</li>
+</ol>
+<hr />
+<h2 id="defect-7-max_recovery_attempts-not-propagated-from-loopconfig">Defect #7: max_recovery_attempts Not Propagated from LoopConfig<a class="headerlink" href="#defect-7-max_recovery_attempts-not-propagated-from-loopconfig" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: MEDIUM</p>
+<h3 id="reproduction-command_6">Reproduction Command<a class="headerlink" href="#reproduction-command_6" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">config = LoopConfig(max_recovery_attempts=5)
+engine = LoopEngine(config)
+failure = Failure(type=FailureType.EXECUTION_ERROR, message=&quot;Test&quot;)
+print(failure.max_recovery_attempts)  # Returns 3, not 5
+</code></pre>
+<h3 id="actual-output_6">Actual Output<a class="headerlink" href="#actual-output_6" title="Permanent link">&para;</a></h3>
+<pre><code>Config max_recovery_attempts: 5
+Failure max_recovery_attempts: 3
+</code></pre>
+<h3 id="expected-output_6">Expected Output<a class="headerlink" href="#expected-output_6" title="Permanent link">&para;</a></h3>
+<pre><code>Failure max_recovery_attempts: 5 (inherited from LoopConfig)
+</code></pre>
+<h3 id="root-cause_6">Root Cause<a class="headerlink" href="#root-cause_6" title="Permanent link">&para;</a></h3>
+<p><code>Failure</code> dataclass uses hard-coded default <code>max_recovery_attempts: int = 3</code> instead of reading from <code>LoopConfig</code>.</p>
+<h3 id="root-cause-file_6">Root-Cause File<a class="headerlink" href="#root-cause-file_6" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/types.py</code> - <code>Failure</code> dataclass
+<code>loop_engine/core.py</code> - Where Failures are created</p>
+<h3 id="planned-correction_6">Planned Correction<a class="headerlink" href="#planned-correction_6" title="Permanent link">&para;</a></h3>
+<ol>
+<li>When creating a Failure in the engine, pass <code>max_recovery_attempts</code> from <code>LoopConfig</code></li>
+<li>Update all <code>Failure(...)</code> instantiations to include <code>max_recovery_attempts=self.config.max_recovery_attempts</code></li>
+</ol>
+<hr />
+<h2 id="defect-8-runtime-exceptions-lost-in-final-result">Defect #8: Runtime Exceptions Lost in Final Result<a class="headerlink" href="#defect-8-runtime-exceptions-lost-in-final-result" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: HIGH</p>
+<h3 id="reproduction-command_7">Reproduction Command<a class="headerlink" href="#reproduction-command_7" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">class FailingActor:
+    async def execute(self, step, observations, context):
+        raise ValueError(&quot;Intentional test failure&quot;)
+
+engine.register_component(ComponentType.ACTOR, FailingActor())
+result = await engine.run(context)
+</code></pre>
+<h3 id="actual-output_7">Actual Output<a class="headerlink" href="#actual-output_7" title="Permanent link">&para;</a></h3>
+<p>Partially working - exception message is captured, but:</p>
+<pre><code>Result status: FAILED
+Failures: 1
+Last failure message: &quot;Intentional test failure&quot;  # This works
+</code></pre>
+<p>However, the iteration count is reset to 0 and some trace information may be lost.</p>
+<h3 id="expected-output_7">Expected Output<a class="headerlink" href="#expected-output_7" title="Permanent link">&para;</a></h3>
+<pre><code>Result status: FAILED
+Failures: 1
+Last failure type: EXECUTION_ERROR
+Last failure message: &quot;Intentional test failure&quot;
+Current state at failure: &lt;preserved&gt;
+Iteration count: &lt;actual iterations before failure&gt;
+</code></pre>
+<h3 id="root-cause_7">Root Cause<a class="headerlink" href="#root-cause_7" title="Permanent link">&para;</a></h3>
+<p>Exception handling in <code>run()</code> method creates a new Failure but some state information may not be fully preserved, and iteration count is in <code>result</code> but may not reflect actual progress.</p>
+<h3 id="root-cause-file_7">Root-Cause File<a class="headerlink" href="#root-cause-file_7" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>run()</code> method exception handling</p>
+<h3 id="planned-correction_7">Planned Correction<a class="headerlink" href="#planned-correction_7" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ensure all state is captured before creating result</li>
+<li>Preserve iteration count even on failure</li>
+<li>Add exception_type and exception_message to result fields</li>
+<li>Ensure state transition history is preserved</li>
+</ol>
+<hr />
+<h2 id="defect-9-incorrect-iteration-count-on-failed-execution">Defect #9: Incorrect Iteration Count on Failed Execution<a class="headerlink" href="#defect-9-incorrect-iteration-count-on-failed-execution" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: MEDIUM</p>
+<h3 id="reproduction-command_8">Reproduction Command<a class="headerlink" href="#reproduction-command_8" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">engine = LoopEngine(LoopConfig(max_iterations=3))
+result = await engine.run(context)
+# If exception occurs in iteration 2, count may be wrong
+</code></pre>
+<h3 id="actual-output_8">Actual Output<a class="headerlink" href="#actual-output_8" title="Permanent link">&para;</a></h3>
+<pre><code>ERROR:loop_engine.core:Loop execution failed: Invalid state transition...
+Result iterations: 0  # Should be 1 (one iteration completed before failure)
+</code></pre>
+<h3 id="expected-output_8">Expected Output<a class="headerlink" href="#expected-output_8" title="Permanent link">&para;</a></h3>
+<pre><code>Result iterations: 1  # Or actual number of iterations attempted
+</code></pre>
+<h3 id="root-cause_8">Root Cause<a class="headerlink" href="#root-cause_8" title="Permanent link">&para;</a></h3>
+<p>When exception occurs, the iteration count in the result may not match the actual iterations executed.</p>
+<h3 id="root-cause-file_8">Root-Cause File<a class="headerlink" href="#root-cause-file_8" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - <code>run()</code> method</p>
+<h3 id="planned-correction_8">Planned Correction<a class="headerlink" href="#planned-correction_8" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ensure <code>result.iterations</code> is populated from <code>state.current_iteration</code> in finally block</li>
+<li>Verify iteration counting in all termination paths</li>
+<li>Add test specifically for iteration count accuracy</li>
+</ol>
+<hr />
+<h2 id="defect-10-benchmark-efficiency-credit-for-incorrect-output">Defect #10: Benchmark Efficiency Credit for Incorrect Output<a class="headerlink" href="#defect-10-benchmark-efficiency-credit-for-incorrect-output" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: HIGH</p>
+<h3 id="reproduction-command_9">Reproduction Command<a class="headerlink" href="#reproduction-command_9" title="Permanent link">&para;</a></h3>
+<p>Examine <code>benchmarks/base.py</code> scoring logic.</p>
+<h3 id="actual-output_9">Actual Output<a class="headerlink" href="#actual-output_9" title="Permanent link">&para;</a></h3>
+<p>Scoring logic not yet audited, but suspected issue:</p>
+<pre><code class="language-python"># Suspected problematic pattern
+total_score = correctness_score + efficiency_bonus
+# If correctness_score is low but efficiency_bonus is high,
+# total_score could still be positive
+</code></pre>
+<h3 id="expected-output_9">Expected Output<a class="headerlink" href="#expected-output_9" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python"># Correctness-first scoring
+if not correct:
+    total_score = 0
+else:
+    total_score = correctness_score + constraint_score + recovery_score + efficiency_bonus - penalties
+</code></pre>
+<h3 id="root-cause_9">Root Cause<a class="headerlink" href="#root-cause_9" title="Permanent link">&para;</a></h3>
+<p>Scoring formula may not properly gate efficiency bonuses on correctness.</p>
+<h3 id="root-cause-file_9">Root-Cause File<a class="headerlink" href="#root-cause-file_9" title="Permanent link">&para;</a></h3>
+<p><code>benchmarks/base.py</code> - Scoring methods</p>
+<h3 id="planned-correction_9">Planned Correction<a class="headerlink" href="#planned-correction_9" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Audit all benchmark scoring logic</li>
+<li>Implement correctness-first scoring rule</li>
+<li>Ensure incorrect/empty/crashed outputs receive score=0</li>
+<li>Move invalid historical results to <code>benchmarks/results/invalidated/</code></li>
+</ol>
+<hr />
+<h2 id="defect-11-missing-pyprojecttoml-for-editable-installation">Defect #11: Missing pyproject.toml for Editable Installation<a class="headerlink" href="#defect-11-missing-pyprojecttoml-for-editable-installation" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: HIGH</p>
+<h3 id="reproduction-command_10">Reproduction Command<a class="headerlink" href="#reproduction-command_10" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">cd /home/novix/workspace/project
+pip install -e .
+</code></pre>
+<h3 id="actual-output_10">Actual Output<a class="headerlink" href="#actual-output_10" title="Permanent link">&para;</a></h3>
+<pre><code>ERROR: File &quot;setup.py&quot; not found. Directory cannot be installed in editable mode
+</code></pre>
+<h3 id="expected-output_10">Expected Output<a class="headerlink" href="#expected-output_10" title="Permanent link">&para;</a></h3>
+<pre><code>Successfully installed loop-engine in editable mode
+</code></pre>
+<h3 id="root-cause_10">Root Cause<a class="headerlink" href="#root-cause_10" title="Permanent link">&para;</a></h3>
+<p>No <code>pyproject.toml</code> or <code>setup.py</code> exists for package installation.</p>
+<h3 id="root-cause-file_10">Root-Cause File<a class="headerlink" href="#root-cause-file_10" title="Permanent link">&para;</a></h3>
+<p>Missing: <code>pyproject.toml</code></p>
+<h3 id="planned-correction_10">Planned Correction<a class="headerlink" href="#planned-correction_10" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Create <code>pyproject.toml</code> with:</li>
+<li>Package metadata (name, version, description)</li>
+<li>Dependencies</li>
+<li>Supported Python versions</li>
+<li>Entry points (if needed)</li>
+<li>Development extras</li>
+<li>Remove manual <code>sys.path</code> manipulation from tests</li>
+<li>Ensure tests work with installed package</li>
+</ol>
+<hr />
+<h2 id="defect-12-tests-use-syspath-manipulation">Defect #12: Tests Use sys.path Manipulation<a class="headerlink" href="#defect-12-tests-use-syspath-manipulation" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: MEDIUM</p>
+<h3 id="reproduction-command_11">Reproduction Command<a class="headerlink" href="#reproduction-command_11" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">grep -r &quot;sys.path.insert&quot; tests/
+</code></pre>
+<h3 id="actual-output_11">Actual Output<a class="headerlink" href="#actual-output_11" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python"># In tests/unit/test_component_registration.py and test_state_machine.py
+sys.path.insert(0, str(project_root))
+</code></pre>
+<h3 id="expected-output_11">Expected Output<a class="headerlink" href="#expected-output_11" title="Permanent link">&para;</a></h3>
+<p>Tests should import from installed package without path manipulation.</p>
+<h3 id="root-cause_11">Root Cause<a class="headerlink" href="#root-cause_11" title="Permanent link">&para;</a></h3>
+<p>Tests designed before package installation was configured.</p>
+<h3 id="root-cause-file_11">Root-Cause File<a class="headerlink" href="#root-cause-file_11" title="Permanent link">&para;</a></h3>
+<p><code>tests/unit/test_component_registration.py</code>
+<code>tests/unit/test_state_machine.py</code>
+<code>reproduce_defects.py</code></p>
+<h3 id="planned-correction_11">Planned Correction<a class="headerlink" href="#planned-correction_11" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Remove all <code>sys.path.insert</code> calls from tests</li>
+<li>Ensure <code>pip install -e .</code> is run before testing</li>
+<li>Use proper package imports: <code>from loop_engine import ...</code></li>
+</ol>
+<hr />
+<h2 id="defect-13-absolute-machine-specific-paths-in-codebase">Defect #13: Absolute Machine-Specific Paths in Codebase<a class="headerlink" href="#defect-13-absolute-machine-specific-paths-in-codebase" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: MEDIUM</p>
+<h3 id="reproduction-command_12">Reproduction Command<a class="headerlink" href="#reproduction-command_12" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">grep -r &quot;/home/novix&quot; --include=&quot;*.py&quot; --include=&quot;*.sh&quot;
+</code></pre>
+<h3 id="actual-output_12">Actual Output<a class="headerlink" href="#actual-output_12" title="Permanent link">&para;</a></h3>
+<pre><code>entrypoint.sh:cd /home/novix/workspace/project
+experiments/generate_figures.py:RESULTS_DIR = &quot;/home/novix/workspace/project/experiments/results&quot;
+experiments/generate_figures.py:FIGURES_DIR = &quot;/home/novix/workspace/project/experiments/figures&quot;
+docs/BASELINE_FAILURE_REPORT.md:sys.path.insert(0, '/home/novix/workspace/project')
+docs/BASELINE_FAILURE_REPORT.md:output_dir = &quot;/home/novix/workspace/project/experiments/results&quot;
+</code></pre>
+<h3 id="expected-output_12">Expected Output<a class="headerlink" href="#expected-output_12" title="Permanent link">&para;</a></h3>
+<p>Only relative paths or <code>Path(__file__)</code> based resolution.</p>
+<h3 id="root-cause_12">Root Cause<a class="headerlink" href="#root-cause_12" title="Permanent link">&para;</a></h3>
+<p>Hard-coded paths from development environment.</p>
+<h3 id="root-cause-file_12">Root-Cause File<a class="headerlink" href="#root-cause-file_12" title="Permanent link">&para;</a></h3>
+<p><code>entrypoint.sh</code>
+<code>experiments/generate_figures.py</code>
+Documentation files</p>
+<h3 id="planned-correction_12">Planned Correction<a class="headerlink" href="#planned-correction_12" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Replace <code>/home/novix/workspace/project</code> with <code>Path(__file__).parent.parent</code> or similar</li>
+<li>Use repository-relative paths</li>
+<li>Update documentation to use relative paths</li>
+</ol>
+<hr />
+<h2 id="defect-14-feature-flags-not-affecting-runtime-behavior">Defect #14: Feature Flags Not Affecting Runtime Behavior<a class="headerlink" href="#defect-14-feature-flags-not-affecting-runtime-behavior" title="Permanent link">&para;</a></h2>
+<p><strong>Severity</strong>: HIGH</p>
+<h3 id="reproduction-command_13">Reproduction Command<a class="headerlink" href="#reproduction-command_13" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">config_enabled = LoopConfig(enable_verification=True)
+config_disabled = LoopConfig(enable_verification=False)
+
+# Both engines should behave differently
+engine_enabled = LoopEngine(config_enabled)
+engine_disabled = LoopEngine(config_disabled)
+
+# Run both and compare traces
+</code></pre>
+<h3 id="actual-output_13">Actual Output<a class="headerlink" href="#actual-output_13" title="Permanent link">&para;</a></h3>
+<pre><code>enable_verification=True: True
+enable_verification=False: False
+# But behavior is identical - verifier not called in either case
+</code></pre>
+<h3 id="expected-output_13">Expected Output<a class="headerlink" href="#expected-output_13" title="Permanent link">&para;</a></h3>
+<p>Different flag values should produce different execution traces and results.</p>
+<h3 id="root-cause_13">Root Cause<a class="headerlink" href="#root-cause_13" title="Permanent link">&para;</a></h3>
+<p>Flags exist in <code>LoopConfig</code> and are checked in <code>_execute_iteration()</code>, but:
+1. Verification doesn't actually affect completion criteria
+2. Memory read/write not implemented in loop
+3. Safety checks not invoked
+4. <code>execution_mode</code> not implemented</p>
+<h3 id="root-cause-file_13">Root-Cause File<a class="headerlink" href="#root-cause-file_13" title="Permanent link">&para;</a></h3>
+<p><code>loop_engine/core.py</code> - Multiple methods need to respect flags</p>
+<h3 id="planned-correction_13">Planned Correction<a class="headerlink" href="#planned-correction_13" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Verification</strong>: When enabled, verifier must be called and result affects completion</li>
+<li><strong>Memory</strong>: When enabled, read before planning, write after completion</li>
+<li><strong>Safety</strong>: When enabled, check at action gates; critical failures block action</li>
+<li><strong>Execution Mode</strong>: MULTI_AGENT should use different code path; HIERARCHICAL should raise UnsupportedExecutionMode</li>
+</ol>
+<hr />
+<h2 id="summary-table">Summary Table<a class="headerlink" href="#summary-table" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Defect</th>
+<th>Severity</th>
+<th>Root-Cause File</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Two-step task fails</td>
+<td>CRITICAL</td>
+<td>core.py</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>2</td>
+<td>EVALUATING-&gt;PLANNING missing</td>
+<td>CRITICAL</td>
+<td>core.py</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>3</td>
+<td>OBSERVING-&gt;PLANNING missing (disabled evaluator)</td>
+<td>HIGH</td>
+<td>core.py</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Evaluator rejection doesn't block</td>
+<td>CRITICAL</td>
+<td>core.py</td>
+<td>CONFIRMED</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Recovery not executed</td>
+<td>CRITICAL</td>
+<td>core.py, components.py</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Recovery invalid state</td>
+<td>HIGH</td>
+<td>core.py</td>
+<td>CONFIRMED</td>
+</tr>
+<tr>
+<td>7</td>
+<td>max_recovery_attempts not propagated</td>
+<td>MEDIUM</td>
+<td>types.py, core.py</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Exceptions lost</td>
+<td>HIGH</td>
+<td>core.py</td>
+<td>PARTIAL</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Incorrect iteration count</td>
+<td>MEDIUM</td>
+<td>core.py</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Benchmark efficiency credit</td>
+<td>HIGH</td>
+<td>benchmarks/base.py</td>
+<td>CONFIRMED</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Missing pyproject.toml</td>
+<td>HIGH</td>
+<td>-</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Tests use sys.path</td>
+<td>MEDIUM</td>
+<td>tests/</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Absolute paths</td>
+<td>MEDIUM</td>
+<td>Multiple files</td>
+<td>REPRODUCED</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Feature flags not connected</td>
+<td>HIGH</td>
+<td>core.py</td>
+<td>REPRODUCED</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Proceed to Phase 2: Redesign iteration lifecycle semantics with explicit ITERATION_COMPLETE state and proper transition specifications.</p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

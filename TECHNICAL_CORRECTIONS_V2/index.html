@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://chillum-codex.github.io/loop-engineering/TECHNICAL_CORRECTIONS_V2/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Technical Corrections V2 - Loop Engineering</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Loop Engineering</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../QUICKSTART/" class="nav-link">Quickstart</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../tool-comparison/" class="nav-link">Tool selection</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Patterns</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../patterns/daily-triage/" class="dropdown-item">Daily triage</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/pr-babysitter/" class="dropdown-item">PR babysitter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/ci-sweeper/" class="dropdown-item">CI sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/dependency-sweeper/" class="dropdown-item">Dependency sweeper</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/changelog-drafter/" class="dropdown-item">Changelog drafter</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/post-merge-cleanup/" class="dropdown-item">Post-merge cleanup</a>
+</li>
+                                    
+<li>
+    <a href="../patterns/issue-triage/" class="dropdown-item">Issue triage</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Runtime specifications</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../STATE_MACHINE_SPECIFICATION/" class="dropdown-item">State machine</a>
+</li>
+                                    
+<li>
+    <a href="../STEP_LIFECYCLE_SPECIFICATION/" class="dropdown-item">Step lifecycle</a>
+</li>
+                                    
+<li>
+    <a href="../RECOVERY_EXECUTION_SPECIFICATION/" class="dropdown-item">Recovery execution</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../FINAL_VALIDATION_REPORT/" class="nav-link">Validation history</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/chillum-codeX/loop-engineering/edit/master/docs/TECHNICAL_CORRECTIONS_V2.md" class="nav-link">Edit on chillum-codeX/loop-engineering
+                                    </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#technical-corrections-v2" class="nav-link">Technical Corrections V2</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#summary" class="nav-link">Summary</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#phase-1-baseline-documentation" class="nav-link">PHASE 1: Baseline Documentation</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#phase-2-component-registry-fix" class="nav-link">PHASE 2: Component Registry Fix</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#phase-3-recovery-tracking-fix" class="nav-link">PHASE 3: Recovery Tracking Fix</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#phase-4-state-machine" class="nav-link">PHASE 4: State Machine</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#remaining-work" class="nav-link">Remaining Work</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#files-changed" class="nav-link">Files Changed</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#remaining-limitations" class="nav-link">Remaining Limitations</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#acceptance-criteria-status" class="nav-link">Acceptance Criteria Status</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="technical-corrections-v2">Technical Corrections V2<a class="headerlink" href="#technical-corrections-v2" title="Permanent link">&para;</a></h1>
+<p><strong>Document Date</strong>: 2026-06-24
+<strong>Framework Version</strong>: 0.2.0 (corrected)
+<strong>Repository</strong>: /home/novix/workspace/project</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This document records all technical corrections made to the Loop Engineering Framework to fix critical defects identified in the baseline audit.</p>
+<hr />
+<h2 id="phase-1-baseline-documentation">PHASE 1: Baseline Documentation<a class="headerlink" href="#phase-1-baseline-documentation" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: COMPLETE</p>
+<p><strong>Deliverable</strong>: <code>docs/BASELINE_FAILURE_REPORT.md</code></p>
+<p><strong>Key Findings</strong>:
+- Component registration mismatch (STRING keys vs ENUM keys)
+- Recovery logic broken (always returns empty list)
+- Missing integration for verification, memory, safety components
+- No state machine
+- Hardcoded paths
+- No test suite</p>
+<hr />
+<h2 id="phase-2-component-registry-fix">PHASE 2: Component Registry Fix<a class="headerlink" href="#phase-2-component-registry-fix" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: COMPLETE</p>
+<h3 id="original-defect">Original Defect<a class="headerlink" href="#original-defect" title="Permanent link">&para;</a></h3>
+<p>Components were registered with STRING keys in <code>runner.py</code>:</p>
+<pre><code class="language-python">engine.components['Planner'] = LLMPlanner(...)  # STRING key
+</code></pre>
+<p>But retrieved with ENUM keys in <code>core.py</code>:</p>
+<pre><code class="language-python">planner = self.components.get(ComponentType.PLANNER)  # ENUM key
+</code></pre>
+<h3 id="root-cause">Root Cause<a class="headerlink" href="#root-cause" title="Permanent link">&para;</a></h3>
+<p>Dictionary keys of different types (<code>str</code> vs <code>ComponentType</code> enum) don't match, causing <code>get()</code> to always return <code>None</code>.</p>
+<h3 id="exact-correction">Exact Correction<a class="headerlink" href="#exact-correction" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Created <code>ComponentRegistry</code> class in <code>loop_engine/core.py</code> (lines 104-206)</li>
+<li>Accepts only <code>ComponentType</code> enum keys</li>
+<li>Rejects string keys with <code>TypeError</code></li>
+<li>Validates component interfaces</li>
+<li>
+<p>Prevents duplicate registration</p>
+</li>
+<li>
+<p>Changed <code>LoopEngine.components</code> from <code>Dict</code> to <code>ComponentRegistry</code> (line 248)</p>
+</li>
+<li>
+<p>Updated <code>runner.py</code> to use enum keys:
+   <code>python
+   engine.register_component(ComponentType.PLANNER, LLMPlanner(...))</code></p>
+</li>
+<li>
+<p>Removed hardcoded paths from <code>runner.py</code> (lines 20-21, 48)</p>
+</li>
+<li>Now uses <code>Path(__file__).parent.parent</code> for project root</li>
+<li>Output directory uses relative paths</li>
+</ol>
+<h3 id="tests-added">Tests Added<a class="headerlink" href="#tests-added" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>tests/unit/test_component_registration.py</code> (13 tests)</li>
+<li><code>test_enum_registration_works</code></li>
+<li><code>test_string_key_rejected</code></li>
+<li><code>test_interface_validation</code></li>
+<li><code>test_duplicate_registration_rejected</code></li>
+<li><code>test_allow_replace_works</code></li>
+<li><code>test_list_registered</code></li>
+<li><code>test_planner_is_called</code></li>
+<li><code>test_actor_is_called</code></li>
+<li><code>test_observer_is_called</code></li>
+<li><code>test_evaluator_is_called</code></li>
+<li><code>test_final_status_not_running</code></li>
+<li><code>test_completed_when_terminated</code></li>
+<li><code>test_recovery_called_for_failure</code></li>
+</ul>
+<h3 id="test-results">Test Results<a class="headerlink" href="#test-results" title="Permanent link">&para;</a></h3>
+<pre><code>============================= test session starts ==============================
+tests/unit/test_component_registration.py::TestComponentRegistration::test_enum_registration_works PASSED
+tests/unit/test_component_registration.py::TestComponentRegistration::test_string_key_rejected PASSED
+tests/unit/test_component_registration.py::TestComponentRegistration::test_interface_validation PASSED
+tests/unit/test_component_registration.py::TestComponentRegistration::test_duplicate_registration_rejected PASSED
+tests/unit/test_component_registration.py::TestComponentRegistration::test_allow_replace_works PASSED
+tests/unit/test_component_registration.py::TestComponentRegistration::test_list_registered PASSED
+tests/unit/test_component_registration.py::TestComponentCalls::test_planner_is_called PASSED
+tests/unit/test_component_registration.py::TestComponentCalls::test_actor_is_called PASSED
+tests/unit/test_component_registration.py::TestComponentCalls::test_observer_is_called PASSED
+tests/unit/test_component_registration.py::TestComponentCalls::test_evaluator_is_called PASSED
+tests/unit/test_component_registration.py::TestFinalStatus::test_final_status_not_running PASSED
+tests/unit/test_component_registration.py::TestFinalStatus::test_completed_when_terminated PASSED
+tests/unit/test_component_registration.py::TestRecovery::test_recovery_called_for_failure PASSED
+============================== 13 passed in 1.12s ==============================
+</code></pre>
+<h3 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h3>
+<p>Execution time increased from 0.0005s to 3.12s, proving components are now being called (MockLLMClient has 0.01s delay per call).</p>
+<hr />
+<h2 id="phase-3-recovery-tracking-fix">PHASE 3: Recovery Tracking Fix<a class="headerlink" href="#phase-3-recovery-tracking-fix" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: COMPLETE</p>
+<h3 id="original-defect_1">Original Defect<a class="headerlink" href="#original-defect_1" title="Permanent link">&para;</a></h3>
+<p>Recovery logic used hacky attribute injection (<code>_recovery_attempted</code>, <code>_failure_id</code>) instead of explicit failure lifecycle tracking.</p>
+<h3 id="root-cause_1">Root Cause<a class="headerlink" href="#root-cause_1" title="Permanent link">&para;</a></h3>
+<p>No structured failure identity tracking - recovery attempts were tracked via dynamically added attributes instead of proper data structures.</p>
+<h3 id="exact-correction_1">Exact Correction<a class="headerlink" href="#exact-correction_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Enhanced <code>Failure</code> dataclass in <code>loop_engine/types.py</code>:</li>
+<li>Added <code>failure_id</code>: Unique identifier for each failure</li>
+<li>Added <code>status</code>: <code>FailureStatus</code> enum (UNHANDLED, RECOVERY_PLANNED, RECOVERY_IN_PROGRESS, RECOVERED, RECOVERY_FAILED, ESCALATED, TERMINAL)</li>
+<li>Added <code>recovery_attempts</code>: Counter for recovery attempts</li>
+<li>Added <code>max_recovery_attempts</code>: Configurable limit (default: 3)</li>
+<li>Added <code>recovery_action_ids</code>: List of recovery action IDs linked to this failure</li>
+<li>Added <code>can_recover()</code>: Check if failure can still be recovered</li>
+<li>Added <code>record_recovery_attempt()</code>: Record a recovery attempt with action ID</li>
+<li>Added <code>mark_recovered()</code>: Mark failure as successfully recovered</li>
+<li>
+<p>Added <code>mark_terminal()</code>: Mark failure as terminal (cannot be recovered)</p>
+</li>
+<li>
+<p>Enhanced <code>RecoveryAction</code> dataclass in <code>loop_engine/types.py</code>:</p>
+</li>
+<li>Added <code>action_id</code>: Unique identifier for each recovery action</li>
+<li>Added <code>failure_id</code>: Links to Failure.failure_id</li>
+<li>Added <code>executed</code>: Boolean flag for execution status</li>
+<li>
+<p>Added <code>success</code>: Optional boolean for success status</p>
+</li>
+<li>
+<p>Updated <code>_execute_recovery()</code> in <code>loop_engine/core.py</code>:</p>
+</li>
+<li>Uses <code>FailureStatus.UNHANDLED</code> to find failures needing recovery</li>
+<li>Sets <code>failure.status = FailureStatus.RECOVERY_PLANNED</code> before recovery</li>
+<li>Calls <code>failure.record_recovery_attempt(action_id)</code> to track attempts</li>
+<li>Links recovery action to failure via <code>recovery_action.failure_id = failure.failure_id</code></li>
+<li>Calls <code>failure.mark_recovered()</code> on successful recovery</li>
+<li>Calls <code>failure.mark_terminal()</code> when max attempts reached</li>
+</ol>
+<h3 id="tests-added_1">Tests Added<a class="headerlink" href="#tests-added_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>tests/unit/test_state_machine.py</code> (17 tests)</li>
+<li><code>test_failure_starts_unhandled</code></li>
+<li><code>test_failure_can_recover_checks_attempts</code></li>
+<li><code>test_failure_mark_recovered</code></li>
+<li><code>test_failure_mark_terminal</code></li>
+<li><code>test_failure_has_unique_id</code></li>
+<li><code>test_recovery_action_has_unique_id</code></li>
+<li><code>test_recovery_action_links_to_failure</code></li>
+<li><code>test_recovery_action_tracks_execution</code></li>
+<li><code>test_recovery_updates_failure_status</code></li>
+<li><code>test_failure_tracked_in_state</code></li>
+</ul>
+<hr />
+<h2 id="phase-4-state-machine">PHASE 4: State Machine<a class="headerlink" href="#phase-4-state-machine" title="Permanent link">&para;</a></h2>
+<p><strong>Status</strong>: COMPLETE</p>
+<h3 id="original-defect_2">Original Defect<a class="headerlink" href="#original-defect_2" title="Permanent link">&para;</a></h3>
+<p>No explicit state machine - execution states were implicit and transitions were not validated.</p>
+<h3 id="root-cause_2">Root Cause<a class="headerlink" href="#root-cause_2" title="Permanent link">&para;</a></h3>
+<p>No formal state machine definition or transition validation.</p>
+<h3 id="exact-correction_2">Exact Correction<a class="headerlink" href="#exact-correction_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Added <code>ExecutionState</code> enum in <code>loop_engine/types.py</code>:</li>
+<li><code>INITIALIZED</code>: Starting state</li>
+<li><code>PLANNING</code>: Creating/revising plan</li>
+<li><code>ACTING</code>: Executing actions</li>
+<li><code>OBSERVING</code>: Capturing observations</li>
+<li><code>EVALUATING</code>: Assessing progress</li>
+<li><code>VERIFYING</code>: Verifying results</li>
+<li><code>RECOVERING</code>: Handling failures</li>
+<li><code>REPLANNING</code>: Revising plan after failure</li>
+<li><code>WAITING_FOR_HUMAN</code>: Awaiting human input</li>
+<li><code>COMPLETED</code>: Successful termination</li>
+<li><code>PARTIALLY_COMPLETED</code>: Partial success</li>
+<li><code>ABSTAINED</code>: Intentional non-completion</li>
+<li><code>BUDGET_EXHAUSTED</code>: Budget limit reached</li>
+<li><code>POLICY_TERMINATED</code>: Policy violation</li>
+<li>
+<p><code>FAILED</code>: Failure termination</p>
+</li>
+<li>
+<p>Added state machine to <code>LoopState</code> in <code>loop_engine/core.py</code>:</p>
+</li>
+<li>Added <code>execution_state: ExecutionState = ExecutionState.INITIALIZED</code></li>
+<li>
+<p>Updated <code>to_dict()</code> to include execution_state</p>
+</li>
+<li>
+<p>Added <code>_VALID_TRANSITIONS</code> map in <code>LoopEngine</code>:</p>
+</li>
+<li>Defines valid transitions from each state</li>
+<li>
+<p>Terminal states have empty transition sets</p>
+</li>
+<li>
+<p>Added <code>_transition_to()</code> method in <code>LoopEngine</code>:</p>
+</li>
+<li>Validates transitions against <code>_VALID_TRANSITIONS</code></li>
+<li>Raises <code>RuntimeError</code> for invalid transitions</li>
+<li>
+<p>Logs transitions in verbose mode</p>
+</li>
+<li>
+<p>Updated execution methods to track states:</p>
+</li>
+<li><code>run()</code>: Initializes to <code>INITIALIZED</code>, handles failures</li>
+<li><code>_execute_iteration()</code>: Transitions through <code>PLANNING</code> → <code>ACTING</code> → <code>OBSERVING</code> → <code>EVALUATING</code></li>
+<li><code>_execute_recovery()</code>: Transitions to <code>RECOVERING</code></li>
+<li><code>_should_continue()</code>: Sets <code>BUDGET_EXHAUSTED</code> on budget exhaustion</li>
+<li><code>_determine_final_status()</code>: Sets terminal states (<code>COMPLETED</code>, <code>FAILED</code>)</li>
+</ol>
+<h3 id="tests-added_2">Tests Added<a class="headerlink" href="#tests-added_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>tests/unit/test_state_machine.py</code> (17 tests total, including state machine tests)</li>
+<li><code>test_initial_state_is_initialized</code></li>
+<li><code>test_state_transitions_through_iteration</code></li>
+<li><code>test_invalid_state_transition_raises</code></li>
+<li><code>test_valid_state_transitions</code></li>
+<li><code>test_budget_exhaustion_sets_state</code></li>
+<li><code>test_completed_is_terminal</code></li>
+<li><code>test_failed_is_terminal</code></li>
+</ul>
+<hr />
+<h2 id="remaining-work">Remaining Work<a class="headerlink" href="#remaining-work" title="Permanent link">&para;</a></h2>
+<h3 id="phase-5-configuration-connection">PHASE 5: Configuration Connection<a class="headerlink" href="#phase-5-configuration-connection" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Connect enable_verification, enable_memory, enable_safety to actual behavior</li>
+<li>Ensure safety controls are immutable</li>
+</ul>
+<h3 id="phase-6-full-runtime-integration">PHASE 6: Full Runtime Integration<a class="headerlink" href="#phase-6-full-runtime-integration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Integrate verification into loop</li>
+<li>Integrate memory read/write</li>
+<li>Integrate safety checks</li>
+</ul>
+<h3 id="phase-7-deterministic-model">PHASE 7: Deterministic Model<a class="headerlink" href="#phase-7-deterministic-model" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Create ScriptedModel for deterministic testing</li>
+<li>Support controlled test scenarios</li>
+</ul>
+<h3 id="phase-8-complete-test-suite">PHASE 8: Complete Test Suite<a class="headerlink" href="#phase-8-complete-test-suite" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Memory tests</li>
+<li>Verification tests</li>
+<li>Safety tests</li>
+<li>Multi-agent tests</li>
+</ul>
+<h3 id="phase-9-benchmark-validity">PHASE 9: Benchmark Validity<a class="headerlink" href="#phase-9-benchmark-validity" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Audit existing results</li>
+<li>Move invalid results to invalidated/</li>
+<li>Implement evaluate() methods</li>
+</ul>
+<h3 id="phase-10-multi-agent">PHASE 10: Multi-Agent<a class="headerlink" href="#phase-10-multi-agent" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Implement orchestrator</li>
+<li>Create deterministic multi-agent demo</li>
+</ul>
+<h3 id="phase-11-scientific-claims">PHASE 11: Scientific Claims<a class="headerlink" href="#phase-11-scientific-claims" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Audit HANDOFF_TO_WRITER.md</li>
+<li>Remove unsupported quantitative claims</li>
+<li>Distinguish implemented vs tested vs hypothesized</li>
+</ul>
+<hr />
+<h2 id="files-changed">Files Changed<a class="headerlink" href="#files-changed" title="Permanent link">&para;</a></h2>
+<ol>
+<li><code>loop_engine/types.py</code> - Added ExecutionState, FailureStatus enums; enhanced Failure and RecoveryAction dataclasses</li>
+<li><code>loop_engine/core.py</code> - Added ComponentRegistry, state machine with _transition_to(), fixed recovery lifecycle, added counters</li>
+<li><code>experiments/runner.py</code> - Fixed component registration, removed hardcoded paths</li>
+<li><code>tests/unit/test_component_registration.py</code> - New test file (13 tests)</li>
+<li><code>tests/unit/test_state_machine.py</code> - New test file (17 tests)</li>
+<li><code>docs/BASELINE_FAILURE_REPORT.md</code> - New document</li>
+<li><code>docs/TECHNICAL_CORRECTIONS_V2.md</code> - This document</li>
+</ol>
+<hr />
+<h2 id="remaining-limitations">Remaining Limitations<a class="headerlink" href="#remaining-limitations" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Mock LLM still returns generic responses</li>
+<li>Verification, memory, safety components not yet integrated into main loop (flags exist but not wired)</li>
+<li>Benchmark evaluate() methods still stubs</li>
+<li>No multi-agent implementation yet</li>
+</ol>
+<hr />
+<h2 id="acceptance-criteria-status">Acceptance Criteria Status<a class="headerlink" href="#acceptance-criteria-status" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component registration uses enum keys</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Test proves planner is called</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Test proves actor is called</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Test proves observer is called</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Test proves evaluator is called</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Engine never returns RUNNING</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Recovery executes for failures</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Recovery doesn't repeat indefinitely</td>
+<td>✅ PASS (max_recovery_attempts enforced)</td>
+</tr>
+<tr>
+<td>Explicit failure lifecycle</td>
+<td>✅ PASS (FailureStatus enum)</td>
+</tr>
+<tr>
+<td>State machine with transitions</td>
+<td>✅ PASS (ExecutionState enum + validation)</td>
+</tr>
+<tr>
+<td>Budgets enforced</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>No machine-specific paths</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td><code>pytest -q</code> passes</td>
+<td>✅ PASS (30 tests)</td>
+</tr>
+<tr>
+<td>Verification affects completion</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Memory affects execution</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Safety checks integrated</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Repeated-action loops detected</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Invalid benchmark results labeled</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Deterministic benchmark works</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Multi-agent path executes</td>
+<td>⏳ PENDING</td>
+</tr>
+<tr>
+<td>Research claims match evidence</td>
+<td>⏳ PENDING</td>
+</tr>
+</tbody>
+</table></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
