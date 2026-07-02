@@ -1,6 +1,6 @@
 # dependency sweeper Pattern
 
-A production-ready loop pattern.
+An alpha starter pattern. Validate its adapters, permissions, and gates in your environment before enabling writes.
 
 ## When
 

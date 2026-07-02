@@ -1,169 +1,57 @@
-# Tool Comparison
+# Tool Selection Guide
 
-Comparing Loop Engineering to other AI coding tools.
+Loop Engineering is a runtime layer, not a foundation model or coding-agent
+replacement. It is designed to wrap repeatable workflows with explicit
+lifecycle controls.
 
-## Summary
+## Choose by workflow
 
-| Feature | Claude Code | Codex | Grok | **Loop Engineering** |
-|---------|-------------|-------|------|---------------------|
-| **Paradigm** | Interactive | Interactive | Interactive | **Autonomous** |
-| **Prompt Reuse** | ❌ | ❌ | ❌ | ✅ SKILL.md |
-| **State Management** | ❌ | ❌ | ❌ | ✅ Full runtime |
-| **Budget Enforcement** | ❌ | ❌ | ❌ | ✅ Hard limits |
-| **Deterministic Gates** | ❌ | ❌ | ❌ | ✅ Pre-LLM checks |
-| **Gen/Eval Separation** | ❌ | ❌ | ❌ | ✅ Different configs |
-| **Human Checkpoints** | ❌ | ❌ | ❌ | ✅ Configurable |
-| **Recovery** | ❌ | ❌ | ❌ | ✅ Automatic |
-| **Persistence** | ❌ | ❌ | ❌ | ✅ JSON/SQLite |
-| **CLI Tools** | ❌ | ✅ | ❌ | ✅ Full toolkit |
-| **Cost Estimation** | ❌ | ❌ | ❌ | ✅ Built-in |
+| Need | Good starting point |
+|------|---------------------|
+| Interactive code exploration and implementation | A coding agent such as Claude Code or Codex |
+| Current web information and general assistance | A web-connected assistant such as Grok |
+| Repeatable workflow with explicit state and budgets | Loop Engineering around a model/tool adapter |
+| One-off task | Use the underlying assistant directly |
+| Recurring task that must resume after interruption | Use a persistent workflow runtime |
 
-## Detailed Comparison
+Capabilities and commercial products change quickly. Verify current provider
+documentation before choosing a tool; this guide intentionally avoids
+checkmark comparisons that would become stale or imply unsupported
+superiority.
 
-### Claude Code
+## What Loop Engineering adds
 
-**Best for**: Interactive exploration, one-off tasks
+- Validated runtime states and transitions
+- Token, cost, step, and retry budgets
+- Deterministic checks before model calls
+- Separate generator and evaluator configuration
+- Configurable human checkpoints
+- Recovery handlers
+- JSON and SQLite persistence
+- A CLI for scaffolding, validation, auditing, execution, and estimates
 
-```bash
-# You type prompts interactively
-claude
-> Review this PR
-> Fix the bug in auth.py
-```
+These controls reduce operational ambiguity; they are not a security or
+correctness guarantee. External side effects require an explicit adapter and
+the default runtime does not silently simulate them.
 
-**Limitations**:
-- No prompt reuse
-- No state between sessions
-- No budget limits
-- You must always be present
+## Hybrid workflow
 
-**When to use Claude Code**:
-- Learning a new codebase
-- One-time tasks
-- When you want to guide every step
+1. Develop and inspect the task with your preferred coding agent.
+2. Capture the stable workflow as a `SKILL.md` contract.
+3. Configure conservative budgets, gates, and checkpoints.
+4. Connect only the external adapters the workflow needs.
+5. Run in dry-run mode, inspect state, then enable writes deliberately.
 
-### Codex
+## Cost notes
 
-**Best for**: Quick edits in existing code
+`loop-engine cost` produces planning estimates from configured assumptions.
+Actual cost varies by provider, model, prompt, output, caching, and retries.
+For supported live calls, the provider adapter records provider-reported token
+usage and cost when the API supplies it.
 
-```bash
-# GitHub CLI integration
-gh copilot suggest "Fix the bug"
-```
+## See also
 
-**Limitations**:
-- Limited context
-- No persistent state
-- Single-shot responses
-
-**When to use Codex**:
-- Quick fixes
-- Within GitHub workflow
-- Simple, contained tasks
-
-### Grok
-
-**Best for**: Real-time information
-
-**Limitations**:
-- No code-specific features
-- No state management
-- General purpose only
-
-**When to use Grok**:
-- Research
-- Understanding concepts
-- Real-time data queries
-
-### Loop Engineering
-
-**Best for**: Autonomous, repeatable tasks
-
-```bash
-# Scaffold once, run forever
-loop-engine init --pattern daily-triage
-loop-engine run  # Runs autonomously
-```
-
-**Advantages**:
-- **Prompt reuse**: SKILL.md pays off intent debt
-- **State management**: Survives crashes, resumes later
-- **Budget enforcement**: Hard limits prevent surprises
-- **Deterministic gates**: Catch issues before LLM calls
-- **Human checkpoints**: Preserve control at critical points
-- **Recovery**: Automatic retry with backoff
-- **Persistence**: State saved to JSON/SQLite
-
-**When to use Loop Engineering**:
-- Recurring tasks (daily triage, CI monitoring)
-- Long-running operations
-- Safety-critical systems
-- When you want to "fire and forget"
-
-## Cost Comparison
-
-### Daily Triage Pattern
-
-| Tool | Setup Time | Per-Run Cost | Monthly Cost* |
-|------|-----------|--------------|---------------|
-| Claude Code | 0 min | $0.15 | $4.50 (manual) |
-| Codex | 0 min | $0.15 | $4.50 (manual) |
-| Loop Engineering | 5 min | $0.15 | $4.50 (automatic) |
-
-*30 runs/month
-
-### CI Sweeper Pattern (Hourly)
-
-| Tool | Setup Time | Per-Run Cost | Monthly Cost* |
-|------|-----------|--------------|---------------|
-| Claude Code | N/A | N/A | Not possible |
-| Codex | N/A | N/A | Not possible |
-| Loop Engineering | 10 min | $0.35 | $255.50 |
-
-*730 runs/month (hourly)
-
-## Decision Matrix
-
-| If you want... | Use |
-|----------------|-----|
-| Interactive exploration | Claude Code |
-| Quick GitHub edits | Codex |
-| Real-time research | Grok |
-| Autonomous, repeatable tasks | **Loop Engineering** |
-| Budget enforcement | **Loop Engineering** |
-| Safety guarantees | **Loop Engineering** |
-| State persistence | **Loop Engineering** |
-| Human checkpoints | **Loop Engineering** |
-
-## Migration Path
-
-Starting with Claude Code and want to automate?
-
-```bash
-# 1. Capture your workflow
-# Use Claude Code interactively to develop your process
-
-# 2. Create SKILL.md
-loop-engine init --pattern custom
-# Document your WHEN, READ, JUDGE, OUTPUT, STOP
-
-# 3. Add budget limits
-# Edit loop.yaml with conservative limits
-
-# 4. Run autonomously
-loop-engine run
-```
-
-## Hybrid Approach
-
-Use multiple tools together:
-
-1. **Claude Code**: Develop and refine workflows
-2. **Loop Engineering**: Automate refined workflows
-3. **Codex**: Quick fixes within GitHub
-
-## See Also
-
-- [Failure Modes](failure-modes.md) - What can go wrong
-- [Anti-Patterns](anti-patterns.md) - Common mistakes
-- [Patterns](../patterns/) - Production-ready configurations
+- [Quickstart](QUICKSTART.md)
+- [Failure modes](failure-modes.md)
+- [Anti-patterns](anti-patterns.md)
+- [Starter patterns](patterns/)

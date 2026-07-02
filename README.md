@@ -3,7 +3,7 @@
 [![Banner](assets/banner.png)](docs/QUICKSTART.md)
 
 [![Status](https://img.shields.io/badge/status-alpha-orange?style=flat-square)](docs/QUICKSTART.md)
-[![Tests](https://img.shields.io/badge/tests-97%20passed-brightgreen?style=flat-square)](tests/)
+[![Tests](https://github.com/chillum-codeX/loop-engineering/actions/workflows/tests.yml/badge.svg)](https://github.com/chillum-codeX/loop-engineering/actions/workflows/tests.yml)
 [![Runtime](https://img.shields.io/badge/runtime-python-blue?style=flat-square)](loop_engine/)
 [![Docs](https://img.shields.io/badge/docs-included-blue?style=flat-square)](docs/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
@@ -23,13 +23,17 @@ Unlike other frameworks that just provide patterns, Loop Engineering provides a 
 
 ## Why Loop Engineering?
 
-Current AI tools expect you to write prompts every time. Loop engineering replaces you as the prompter - you design the system that prompts your agents.
+Interactive AI tools are excellent for direct collaboration. Recurring
+workflows add a different problem: somebody must define when the agent runs,
+what it may spend, how its output is checked, and how interrupted work resumes.
+Loop engineering makes those controls explicit.
 
 ### The Problem
 
-- **Claude Code / Codex / Grok**: You still have to prompt them every time
-- **Task-specific agents**: Inflexible, hard to maintain
-- **Generic frameworks**: No state management, no safety guarantees
+- **Repeated manual setup**: Stable intent is copied between runs
+- **Task-specific scripts**: Lifecycle and recovery logic become scattered
+- **Ad hoc workflows**: Lifecycle state, limits, and recovery can be difficult
+  to inspect or reproduce
 
 ### The Solution
 
@@ -76,8 +80,13 @@ Scheduling <- Persistence <- Human Checkpoints
 ### Installation
 
 ```bash
-pip install loop-engineering
+git clone https://github.com/chillum-codeX/loop-engineering.git
+cd loop-engineering
+pip install -e .
 ```
+
+The package is not yet published to PyPI. The repository and GitHub release are
+the supported installation sources for v0.4.0.
 
 ### Create Your First Loop
 
@@ -220,22 +229,46 @@ Each pattern includes:
 
 ---
 
-## Tool Comparison
+## Where It Fits
 
-| Feature | Claude Code | Codex | Grok | **Loop Engineering** |
-|---------|-------------|-------|------|---------------------|
-| Prompt Reuse | No | No | No | Yes, SKILL.md |
-| State Machine | No | No | No | Yes, full runtime |
-| Budget Enforcement | No | No | No | Yes, hard limits |
-| Deterministic Gates | No | No | No | Yes, pre-LLM checks |
-| Gen/Eval Separation | No | No | No | Yes, different configs |
-| Human Checkpoints | No | No | No | Yes, configurable |
-| Recovery | No | No | No | Yes, automatic |
-| Persistence | No | No | No | Yes, JSON/SQLite |
-| CLI Tools | No | Yes | No | Yes, full toolkit |
-| Cost Estimation | No | No | No | Yes, built-in |
+Loop Engineering is a runtime layer for repeatable agent workflows. It can sit
+around a model provider or coding agent; it is not a replacement for those
+tools. Its scope is lifecycle control: explicit state, budgets, deterministic
+checks, recovery, checkpoints, and persistence.
 
-**Bottom line**: Other tools are single-shot; Loop Engineering is the infrastructure for autonomous operation.
+Provider and product capabilities change quickly, so this project does not
+claim feature superiority over Claude Code, Codex, Grok, or other agent
+frameworks. See the [tool selection guide](docs/tool-comparison.md) for a
+workflow-oriented comparison.
+
+---
+
+## Verification and Evidence
+
+The repository separates three kinds of evidence:
+
+- **Unit/integration suite**: 97 tests covering runtime transitions, budgets,
+  persistence, adapters, CLI behavior, and benchmark evaluators.
+- **Deterministic evaluator validation**: oracle answers must pass and empty
+  negative controls must fail. Results are stored in
+  [`experiments/results/deterministic_validation.json`](experiments/results/deterministic_validation.json).
+- **Live provider smoke test**: one paid OpenRouter request verified
+  provider-reported token and cost accounting. The response body and API key
+  are not stored; sanitized evidence is in
+  [`experiments/results/live_provider_smoke_paid.json`](experiments/results/live_provider_smoke_paid.json).
+
+Reproduce the non-secret checks:
+
+```bash
+python -m pytest tests/ -q
+python -m experiments.deterministic_runner
+python -m build
+python -m twine check dist/*
+```
+
+Historical mock benchmark outputs are not evidence of model quality or
+security effectiveness. No SOTA, production-readiness, or comparative
+performance claim is made from them.
 
 ---
 
@@ -289,7 +322,7 @@ evaluator = EvaluatorConfig(
 ## Documentation
 
 - [**Quickstart**](docs/QUICKSTART.md) - Get running in 5 minutes
-- [**Patterns**](docs/patterns/) - Production-ready patterns
+- [**Patterns**](docs/patterns/) - Starter pattern specifications
 - [**Tool Comparison**](docs/tool-comparison.md) - vs Grok, Claude Code, Codex
 - [**Technical Corrections**](docs/TECHNICAL_CORRECTIONS_V3.md) - What changed and why
 - [**State Machine Notes**](docs/STATE_MACHINE_IMPLEMENTATION.md) - Runtime and lifecycle details
