@@ -289,13 +289,11 @@ evaluator = EvaluatorConfig(
 ## Documentation
 
 - [**Quickstart**](docs/QUICKSTART.md) - Get running in 5 minutes
-- [**Installation**](docs/INSTALLATION.md) - Detailed setup guide
 - [**Patterns**](docs/patterns/) - Production-ready patterns
 - [**Tool Comparison**](docs/tool-comparison.md) - vs Grok, Claude Code, Codex
-- [**Failure Modes**](docs/failure-modes.md) - What can go wrong
-- [**Anti-Patterns**](docs/anti-patterns.md) - Common mistakes
-- [**API Reference**](docs/api-reference.md) - Python API docs
-- [**MCP Cookbook**](docs/mcp-cookbook.md) - Model Context Protocol examples
+- [**Technical Corrections**](docs/TECHNICAL_CORRECTIONS_V3.md) - What changed and why
+- [**State Machine Notes**](docs/STATE_MACHINE_IMPLEMENTATION.md) - Runtime and lifecycle details
+- [**Validation Reports**](docs/FINAL_VALIDATION_REPORT.md) - Audit and validation history
 
 ---
 

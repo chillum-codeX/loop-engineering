@@ -88,20 +88,23 @@ loop-engine run
 For programmatic use:
 
 ```python
-from loop_engine import LoopEngine, Budget
+import asyncio
 
-budget = Budget(
-    max_tokens=100_000,
-    max_cost=10.0,
-    max_steps=50,
-)
+from loop_engine import RuntimeConfig, create_runtime
 
-loop = LoopEngine(budget=budget)
-result = loop.run("Optimize database queries")
+config = RuntimeConfig()
+config.discovery.skills_dir = ".loop/skills"
+config.persistence.state_dir = ".loop/state"
+config.persistence.format = "sqlite"
+config.handoff.default_token_budget = 100_000
+config.handoff.default_cost_budget = 10.0
+config.handoff.default_step_budget = 50
 
-print(f"Status: {result.status}")
-print(f"Tokens: {result.tokens_used}")
-print(f"Cost: ${result.cost:.2f}")
+runtime = create_runtime(runtime_config=config, max_iterations=50)
+result = asyncio.run(runtime.run())
+
+print(f"Completed: {result.status.name}")
+print(f"Tasks completed: {result.tasks_completed}")
 ```
 
 ## Next Steps
